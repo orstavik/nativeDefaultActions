@@ -1,5 +1,5 @@
 //expose the requestSelect method of the HTMLSelectElement
-function requestSelect(option) {
+export function requestSelect(option) {
   function optionSelectEndMouseup() {
     //option.color = orange?? //there is no way to trigger this behavior from js... It is completely hidden in the browser.
     const input = new InputEvent("input", {bubbles: true, composed: true});

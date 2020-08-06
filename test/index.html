@@ -102,8 +102,8 @@
     }
 
     await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], nativeDefaultActionsTestIsTrusted, [
-      [selectOption, "0SELECT:bound requestOptionSelect- 1SELECT:bound focus+", newMousedown()],
-      [selectOptgroupOption, "0SELECT:bound requestOptionSelect- 2SELECT:bound focus+", newMousedown()],
+      [selectOption, "0SELECT:bound requestSelect- 1SELECT:bound focus+", newMousedown()],
+      [selectOptgroupOption, "0SELECT:bound requestSelect- 2SELECT:bound focus+", newMousedown()],
       [selectDivOption, "2SELECT:bound focus+", newMousedown()],
       [selectOptgroupSpanOption, "3SELECT:bound focus+", newMousedown()],
       [formButtonReset, "0BUTTON:bound event_dblclick+ 0FORM:bound reset-", newClick()],
