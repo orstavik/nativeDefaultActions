@@ -1,0 +1,126 @@
+<script>
+  function nextTick2(cb) {
+    let r;
+    const p = new Promise(function (resolve) {
+      r = resolve;
+    });
+    setTimeout(function () {
+      cb();
+      setTimeout(function () {
+        r();
+      })//todo i need setTimeout(..., 1) for this to work in ff?
+    }); //todo i need 1 for this to work in ff?
+    return p;
+  }
+
+  function setValue(obj, a, b, value) {
+    !obj[a] && (obj[a] = {});
+    !obj[a][b] && (obj[a][b] = {});
+    obj[a][b] = value;
+  }
+
+  function printResults(results) {
+    for (let [testName, testResults] of Object.entries(results)) {
+      const expected = testResults.expected;
+      delete testResults.expected;
+      const native = testResults.NATIVE;
+      for (let [systemName, result] of Object.entries(testResults)) {
+        if (systemName === "NATIVE")
+          testResults[systemName] = result === expected ? 1 : result;
+        else
+          testResults[systemName] =
+            (result === expected && result === native) ? null :
+              (result === expected) ? 1 :
+                (result === native) ? undefined :
+                  (result + " != " + expected)
+      }
+    }
+    console.table(results);
+  }
+
+  async function runTest2(eventSystems, test, usecasesExpects) {
+    const {name: testName, fun} = test;
+    const results = {};
+    for (let [system, resetSystem] of eventSystems) {
+      system();
+      for (let i = 0; i < usecasesExpects.length; i++) {
+        let [usecase, expected, event] = usecasesExpects[i];
+
+        setValue(results, testName + ":" + usecase.name, "expected", expected);
+
+        let result = [];
+        fun(result, usecase, event);
+        await nextTick2(() => 1);  //just wait a t1ck, for any queued propagation to complete
+        setValue(results, testName + ":" + usecase.name, system.name, result.join(""));
+        await nextTick2(() => 1);  //just wait a t0ck, for any queued tasks of the propagation to complete
+      }
+      resetSystem();
+    }
+    return nextTick2(function () {
+      printResults(results);
+    });
+  }
+</script>
+
+<script type="module">
+
+  import {nativeDefaultActions} from "../src/nativeDefaultActions.js";
+
+  function NATIVE_DEFAULT_ACTION() {
+    window.nativeDefaultActions = nativeDefaultActions;
+  }
+
+  function RESET() {
+    window.nativeDefaultActions = undefined;
+  }
+
+
+  import {
+    nativeDefaultActionsTestIsTrusted,
+    nativeDefaultActionsTest
+  } from "./testDefaultActionsLists.js";
+  import {
+    selectOption,
+    selectOptgroupOption,
+    selectDivOption,
+    selectOptgroupSpanOption
+  } from "./useCaseSelectNativeDefaultActions.js";
+  import {
+    formButtonReset,
+    formInputReset,
+    formButtonSubmit,
+    formInputSubmit
+  } from "./useCaseFormNativeDefaultActions.js";
+
+  (async function () {
+    function newMousedown() {
+      return new MouseEvent("mousedown", {button: 0, composed: true, bubbles: true, cancelable: true});
+    }
+
+    function newClick() {
+      return new MouseEvent("click", {button: 0, composed: true, bubbles: true, cancelable: true});
+    }
+
+    await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], nativeDefaultActionsTestIsTrusted, [
+      [selectOption, "0SELECT:bound requestOptionSelect- 1SELECT:bound focus+", newMousedown()],
+      [selectOptgroupOption, "0SELECT:bound requestOptionSelect- 2SELECT:bound focus+", newMousedown()],
+      [selectDivOption, "2SELECT:bound focus+", newMousedown()],
+      [selectOptgroupSpanOption, "3SELECT:bound focus+", newMousedown()],
+      [formButtonReset, "0BUTTON:bound event_dblclick+ 0FORM:bound reset-", newClick()],
+      [formInputReset, "0INPUT:bound event_dblclick+ 0FORM:bound reset-", newClick()],
+      [formButtonSubmit, "0BUTTON:bound event_dblclick+ 0FORM:bound requestSubmit-", newClick()],
+      [formInputSubmit, "0INPUT:bound event_dblclick+ 0FORM:bound requestSubmit-", newClick()]
+    ]);
+
+    await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], nativeDefaultActionsTest, [
+      [selectOption, "", newMousedown()],
+      [selectOptgroupOption, "", newMousedown()],
+      [selectDivOption, "", newMousedown()],
+      [selectOptgroupSpanOption, "", newMousedown()],
+      [formButtonReset, "0FORM:bound reset-", newClick()],
+      [formInputReset, "0FORM:bound reset-", newClick()],
+      [formButtonSubmit, "0FORM:bound requestSubmit-", newClick()],
+      [formInputSubmit, "0FORM:bound requestSubmit-", newClick()]
+    ]);
+  })();
+</script>
