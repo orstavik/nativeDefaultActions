@@ -99,7 +99,7 @@ function makeElementFilter(query) {
 }
 
 let listOfDefaultActions2 = [];
-for (let {eventQuery, elementQuery, method, additive} of listOfDefaultActions) {
+for (let {eventQuery, elementQuery, method, additive, irreversible} of listOfDefaultActions) {
   for (let elementQuery1 of elementQuery.split(",")) {
     listOfDefaultActions2.push({
       eventQuery: makeEventFilter(eventQuery),
