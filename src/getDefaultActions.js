@@ -105,7 +105,8 @@ for (let {eventQuery, elementQuery, method, additive} of listOfDefaultActions) {
       eventQuery: makeEventFilter(eventQuery),
       elementQuery: makeElementFilter(elementQuery1.trim()),
       method,
-      additive
+      additive,
+      irreversible
     });
   }
 }
