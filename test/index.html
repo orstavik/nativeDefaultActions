@@ -64,20 +64,19 @@
 
 <script type="module">
 
-  import {nativeDefaultActions} from "../src/nativeDefaultActions.js";
+  import {getDefaultActions} from "../src/getDefaultActions.js";
 
   function NATIVE_DEFAULT_ACTION() {
-    window.nativeDefaultActions = nativeDefaultActions;
+    window.getDefaultActions = getDefaultActions;
   }
 
   function RESET() {
-    window.nativeDefaultActions = undefined;
+    window.getDefaultActions = undefined;
   }
 
-
   import {
-    nativeDefaultActionsTestIsTrusted,
-    nativeDefaultActionsTest
+    getDefaultActionsTestIsTrusted,
+    getDefaultActionsTest
   } from "./testDefaultActionsLists.js";
   import {
     selectOption,
@@ -101,26 +100,26 @@
       return new MouseEvent("click", {button: 0, composed: true, bubbles: true, cancelable: true});
     }
 
-    await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], nativeDefaultActionsTestIsTrusted, [
-      [selectOption, "0SELECT:bound requestSelect- 1SELECT:bound focus+", newMousedown()],
-      [selectOptgroupOption, "0SELECT:bound requestSelect- 2SELECT:bound focus+", newMousedown()],
-      [selectDivOption, "2SELECT:bound focus+", newMousedown()],
-      [selectOptgroupSpanOption, "3SELECT:bound focus+", newMousedown()],
-      [formButtonReset, "0BUTTON:bound event_dblclick+ 0FORM:bound reset-", newClick()],
-      [formInputReset, "0INPUT:bound event_dblclick+ 0FORM:bound reset-", newClick()],
-      [formButtonSubmit, "0BUTTON:bound event_dblclick+ 0FORM:bound requestSubmit-", newClick()],
-      [formInputSubmit, "0INPUT:bound event_dblclick+ 0FORM:bound requestSubmit-", newClick()]
+    await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTestIsTrusted, [
+      [selectOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false}, {"index":1,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false}]', newMousedown()],
+      [selectOptgroupOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false}, {"index":2,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false}]', newMousedown()],
+      [selectDivOption, '[{"index":2,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false}]', newMousedown()],
+      [selectOptgroupSpanOption, '[{"index":3,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false}]', newMousedown()],
+      [formButtonReset, '[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":false}, {"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false}]', newClick()],
+      [formInputReset, '[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":false}, {"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false}]', newClick()],
+      [formButtonSubmit, `[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":false}, {"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false}]`, newClick()],
+      [formInputSubmit, `[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":false}, {"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false}]`, newClick()]
     ]);
 
-    await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], nativeDefaultActionsTest, [
-      [selectOption, "", newMousedown()],
-      [selectOptgroupOption, "", newMousedown()],
-      [selectDivOption, "", newMousedown()],
-      [selectOptgroupSpanOption, "", newMousedown()],
-      [formButtonReset, "0FORM:bound reset-", newClick()],
-      [formInputReset, "0FORM:bound reset-", newClick()],
-      [formButtonSubmit, "0FORM:bound requestSubmit-", newClick()],
-      [formInputSubmit, "0FORM:bound requestSubmit-", newClick()]
+    await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTest, [
+      [selectOption, "[]", newMousedown()],
+      [selectOptgroupOption, "[]", newMousedown()],
+      [selectDivOption, "[]", newMousedown()],
+      [selectOptgroupSpanOption, "[]", newMousedown()],
+      [formButtonReset, '[{"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false}]', newClick()],
+      [formInputReset, '[{"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false}]', newClick()],
+      [formButtonSubmit, '[{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false}]', newClick()],
+      [formInputSubmit, '[{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false}]', newClick()]
     ]);
   })();
 </script>

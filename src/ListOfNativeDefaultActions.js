@@ -12,7 +12,8 @@ export const listOfDefaultActions = [{
   eventQuery: "click?isTrusted=true",     //isTrusted is not necessary for submit
   elementQuery: "*",
   method: (target, notInUse, event) => event_dblclick.bind(null, target, null, event),
-  additive: true
+  additive: true,
+  irreversible: true
 }, {
   eventQuery: "click?isTrusted=true",
   elementQuery: "a[href]",

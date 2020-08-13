@@ -110,18 +110,19 @@ for (let {eventQuery, elementQuery, method, additive} of listOfDefaultActions) {
   }
 }
 
-export function nativeDefaultActions(e) {
+export function getDefaultActions(e) {
   return listOfDefaultActions2
     .filter(({eventQuery}) => eventQuery(e))
     .reduce((acc, defAct) => {
       const [childIndex, parent, child] = defAct.elementQuery(e);
       if (parent) {
         acc.push({
-          index: childIndex,
-          element: parent,
+          index: childIndex,//todo the FORM default action uses the child index, but the details and option/select uses the parent. I think.
+          host: parent,
           task: defAct.method(parent, child, e),
           native: true,
-          additive: defAct.additive
+          additive: !!defAct.additive,
+          irreversible: !!defAct.irreversible
         });
       }
       return acc;
