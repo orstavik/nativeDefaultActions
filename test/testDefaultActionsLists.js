@@ -12,7 +12,12 @@ function replacer(key, value) {
   return value;
 }
 
+const OG = WeakMap.prototype.get;
+
 function spoofIsTrusted(e) {
+  WeakMap.prototype.get = function (obj) {
+    return OG.call(this, obj?.spoofyDoo || obj);
+  }
   return new Proxy(e, {
     get(obj, key) {
       if (key === "isTrusted")
@@ -25,6 +30,10 @@ function spoofIsTrusted(e) {
   });
 }
 
+function unspoofIsTrusted() {
+  WeakMap.prototype.get = OG;
+}
+
 export const getDefaultActionsTestIsTrusted = {
   name: "getDefaultActions(event.isTrusted)",
   fun: function (res, usecase, event) {
@@ -35,6 +44,7 @@ export const getDefaultActionsTestIsTrusted = {
     origin.addEventListener(event.type, function (e) {
       const eIsTrusted = spoofIsTrusted(e);
       const actions = getDefaultActions(eIsTrusted);
+      unspoofIsTrusted();
       const str = JSON.stringify(actions, replacer);
       console.log(str)
       res.push(str);

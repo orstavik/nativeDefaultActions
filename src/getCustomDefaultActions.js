@@ -82,9 +82,7 @@ export function narrowPreventDefault(event, host) {
 
 export function getDefaultActions(event) {
   //1. merge the native and the custom default actions, native wins
-  // const defActs = getNativeDefaultActions(event).concat(defaultActions.get(event) || []);//todo yes
-  const custom = event.spoofyDoo || event;                                                  //todo no
-  const defActs = getNativeDefaultActions(event).concat(defaultActions.get(custom) || []);  //todo no
+  const defActs = getNativeDefaultActions(event).concat(defaultActions.get(event) || []);
   //2. sort in order of the propagation path, lowest wins
   defActs.sort((a, b) => a.index <= b.index);
   //3a. mark regular preventDefault()
