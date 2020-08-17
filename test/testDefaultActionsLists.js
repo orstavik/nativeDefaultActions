@@ -1,19 +1,15 @@
-function defaultActionToString(da) {
-  return da.index + da.element.tagName + ":" + da.task.name + (da.additive ? "+" : "-");
-}
-
-function printDefaultAction(action) {
-  action = Object.assign({}, action);
-  if (action.host)
-    action.host = action.host.tagName || typeof (action.host);
-  if (action.element)
-    action.element = action.element.tagName || typeof (action.element);
-  action.task = action.task.name;
-  return JSON.stringify(action);
-}
-
-function printDefaultActions(actions) {
-  return "[" + actions.map(act => printDefaultAction(act)).join(", ") + "]";
+function replacer(key, value) {
+  if (value instanceof Function)
+    return value.name;
+  if (value instanceof HTMLElement)
+    return value.tagName;
+  if (value instanceof DocumentFragment)
+    return "#shadow"
+  if (value === document)
+    return "document"
+  if (value === window)
+    return "window"
+  return value;
 }
 
 function spoofIsTrusted(e) {
@@ -21,6 +17,8 @@ function spoofIsTrusted(e) {
     get(obj, key) {
       if (key === "isTrusted")
         return true;
+      if (key === "spoofyDoo")
+        return e;
       const val = Reflect.get(obj, key);   //if we use obj[key], we get an infinite loop
       return val instanceof Function ? val.bind(obj) : val;
     }
@@ -37,9 +35,10 @@ export const getDefaultActionsTestIsTrusted = {
     origin.addEventListener(event.type, function (e) {
       const eIsTrusted = spoofIsTrusted(e);
       const actions = getDefaultActions(eIsTrusted);
-      const str = printDefaultActions(actions);
+      const str = JSON.stringify(actions, replacer);
       console.log(str)
       res.push(str);
+      e.preventDefault(); //we don't want these tests to run the default actions.
     });
     target.dispatchEvent(event);
   }
@@ -55,9 +54,10 @@ export const getDefaultActionsTest = {
     origin.addEventListener(event.type, function (e) {
       //to get the dblclick we need to spoof the isTrusted of the click event.
       const actions = getDefaultActions(e);
-      const str = printDefaultActions(actions);
+      const str = JSON.stringify(actions, replacer);
       console.log(str)
       res.push(str);
+      e.preventDefault(); //we don't want these tests to run the default actions.
     });
     target.dispatchEvent(event);
   }

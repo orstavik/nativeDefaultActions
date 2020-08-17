@@ -65,6 +65,7 @@
 <script type="module">
 
   import {getDefaultActions} from "../src/getNativeDefaultActions.js";
+  import {addDefault, getDefaultActions as customGetDefaultAction, narrowPreventDefault} from "../src/getCustomDefaultActions.js";
 
   function NATIVE_DEFAULT_ACTION() {
     window.getDefaultActions = getDefaultActions;
@@ -72,6 +73,16 @@
 
   function RESET() {
     window.getDefaultActions = undefined;
+  }
+
+  function CUSTOM_DEFAULT_ACTION() {
+    window.getDefaultActions = customGetDefaultAction;
+    window.addDefault = addDefault;
+  }
+
+  function RESET_CUSTOM() {
+    window.getDefaultActions = undefined;
+    window.addDefault = undefined;
   }
 
   import {
@@ -90,6 +101,10 @@
     formButtonSubmit,
     formInputSubmit
   } from "./useCaseFormNativeDefaultActions.js";
+  import {
+    aaCheckbox,
+    aaH1
+  } from "./useCaseAA.js";
 
   (async function () {
     function newMousedown() {
@@ -101,14 +116,14 @@
     }
 
     await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTestIsTrusted, [
-      [selectOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"select > option, select > optgroup > option"}, {"index":1,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
-      [selectOptgroupOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"select > option, select > optgroup > option"}, {"index":2,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
+      [selectOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"select > option, select > optgroup > option"},{"index":1,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
+      [selectOptgroupOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"select > option, select > optgroup > option"},{"index":2,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
       [selectDivOption, '[{"index":2,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
       [selectOptgroupSpanOption, '[{"index":3,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
-      [formButtonReset, '[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"}, {"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=reset], form input[type=reset]"}]', newClick()],
-      [formInputReset, '[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"}, {"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=reset], form input[type=reset]"}]', newClick()],
-      [formButtonSubmit, `[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"}, {"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]`, newClick()],
-      [formInputSubmit, `[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"}, {"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]`, newClick()]
+      [formButtonReset, '[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"},{"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=reset], form input[type=reset]"}]', newClick()],
+      [formInputReset, '[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"},{"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=reset], form input[type=reset]"}]', newClick()],
+      [formButtonSubmit, `[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"},{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]`, newClick()],
+      [formInputSubmit, `[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"},{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]`, newClick()]
     ]);
 
     await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTest, [
@@ -120,6 +135,11 @@
       [formInputReset, '[{"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=reset], form input[type=reset]"}]', newClick()],
       [formButtonSubmit, '[{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]', newClick()],
       [formInputSubmit, '[{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]', newClick()]
+    ]);
+
+    await runTest2([[CUSTOM_DEFAULT_ACTION, RESET_CUSTOM]], getDefaultActionsTestIsTrusted, [
+      [aaH1, '[{"index":0,"host":"H1","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"},{"additive":false,"irreversible":false,"native":"kinda","task":"bound requestNavigate","host":"A-A","index":3}]', newClick()],
+      [aaCheckbox, '[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"},{"index":0,"host":"INPUT","task":"bound requestCheckboxToggle","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"input[type=checkbox]"},{"additive":false,"irreversible":false,"native":"kinda","task":"bound requestNavigate","host":"A-A","index":3,"excluded":true}]', newClick()],
     ]);
   })();
 </script>
