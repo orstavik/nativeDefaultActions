@@ -1,22 +1,3 @@
-
-//todo
-// 1. we are lacking the support for regex in the event property query.
-//    This is important when we work with keydown default actions.
-//    ivar
-// 2. we need to complete the full list of default actions.
-//    a. write up the default actions, and be careful not to add event controller default actions, such as contextmenu.
-//       examples of event controller default actions are contextmenu and keypress-to-click
-//       write a list of both the default actions that come from event controllers and elements here.
-// 3. add more and check the list of all exposed requestDefaultAction methods.. we use modern chrome behavior as guide.
-
-
-//generic default actions
-//1. contextmenu, "*".
-//2. drag'n'drop, "[draggable]". add more to the queryselector here, not everything marked [draggable] can be dragged?? We also need a queryselector format that queries for css properties..
-//3. keydown enter produces click. I think this should be "a[href], input, button, textarea, select"?? is it the same as focusable?? no there are special rules here..
-//4. the deadcaps controller. this is a mess.. produces composition events and beforeinput (except in old firefox).
-//   deadcaps are currently actually handled by input and textarea..
-
 import {listOfDefaultActions} from "./ListOfNativeDefaultActions.js";
 
 function makeEventFilter(eventQuery) {
@@ -29,7 +10,7 @@ function makeEventFilter(eventQuery) {
     if (e.type !== type)
       return false;
     for (let [prop, value] of props) {
-      if (e[prop]+"" !== value)
+      if (e[prop] + "" !== value)
         return false;
     }
     return true;
@@ -102,6 +83,8 @@ let listOfDefaultActions2 = [];
 for (let {eventQuery, elementQuery, method, additive, irreversible} of listOfDefaultActions) {
   for (let elementQuery1 of elementQuery.split(",")) {
     listOfDefaultActions2.push({
+      eventQueryStr: eventQuery,
+      elementQueryStr: elementQuery,
       eventQuery: makeEventFilter(eventQuery),
       elementQuery: makeElementFilter(elementQuery1.trim()),
       method,
@@ -123,10 +106,12 @@ export function getDefaultActions(e) {
           task: defAct.method(parent, child, e),
           native: true,
           additive: !!defAct.additive,
-          irreversible: !!defAct.irreversible
+          irreversible: !!defAct.irreversible,
+          eventQueryStr: defAct.eventQueryStr,
+          elementQueryStr: defAct.elementQueryStr
         });
       }
       return acc;
     }, [])
-    .sort((a, b) => a.index < b.index);
+    .sort((a, b) => a.index <= b.index);
 }

@@ -101,14 +101,14 @@
     }
 
     await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTestIsTrusted, [
-      [selectOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false}, {"index":1,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false}]', newMousedown()],
-      [selectOptgroupOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false}, {"index":2,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false}]', newMousedown()],
-      [selectDivOption, '[{"index":2,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false}]', newMousedown()],
-      [selectOptgroupSpanOption, '[{"index":3,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false}]', newMousedown()],
-      [formButtonReset, '[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true}, {"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false}]', newClick()],
-      [formInputReset, '[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true}, {"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false}]', newClick()],
-      [formButtonSubmit, `[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true}, {"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false}]`, newClick()],
-      [formInputSubmit, `[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true}, {"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false}]`, newClick()]
+      [selectOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"select > option, select > optgroup > option"}, {"index":1,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
+      [selectOptgroupOption, '[{"index":0,"host":"SELECT","task":"bound requestSelect","native":true,"additive":false,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"select > option, select > optgroup > option"}, {"index":2,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
+      [selectDivOption, '[{"index":2,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
+      [selectOptgroupSpanOption, '[{"index":3,"host":"SELECT","task":"bound focus","native":true,"additive":true,"irreversible":false,"eventQueryStr":"mousedown?button=0&isTrusted=true","elementQueryStr":"a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"}]', newMousedown()],
+      [formButtonReset, '[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"}, {"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=reset], form input[type=reset]"}]', newClick()],
+      [formInputReset, '[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"}, {"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=reset], form input[type=reset]"}]', newClick()],
+      [formButtonSubmit, `[{"index":0,"host":"BUTTON","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"}, {"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]`, newClick()],
+      [formInputSubmit, `[{"index":0,"host":"INPUT","task":"bound event_dblclick","native":true,"additive":true,"irreversible":true,"eventQueryStr":"click?isTrusted=true","elementQueryStr":"*"}, {"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]`, newClick()]
     ]);
 
     await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTest, [
@@ -116,10 +116,10 @@
       [selectOptgroupOption, "[]", newMousedown()],
       [selectDivOption, "[]", newMousedown()],
       [selectOptgroupSpanOption, "[]", newMousedown()],
-      [formButtonReset, '[{"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false}]', newClick()],
-      [formInputReset, '[{"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false}]', newClick()],
-      [formButtonSubmit, '[{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false}]', newClick()],
-      [formInputSubmit, '[{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false}]', newClick()]
+      [formButtonReset, '[{"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=reset], form input[type=reset]"}]', newClick()],
+      [formInputReset, '[{"index":0,"host":"FORM","task":"bound reset","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=reset], form input[type=reset]"}]', newClick()],
+      [formButtonSubmit, '[{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]', newClick()],
+      [formInputSubmit, '[{"index":0,"host":"FORM","task":"bound requestSubmit","native":true,"additive":false,"irreversible":false,"eventQueryStr":"click","elementQueryStr":"form button[type=submit], form input[type=submit]"}]', newClick()]
     ]);
   })();
 </script>

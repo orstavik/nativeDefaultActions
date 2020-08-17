@@ -59,3 +59,19 @@ export const listOfDefaultActions = [{
 }];
 //tab?? does this produce a default action?? I think yes
 //other characters for input and textarea..
+
+//generic default actions
+//1. contextmenu, "*".
+//2. drag'n'drop, "[draggable]". add more to the queryselector here, not everything marked [draggable] can be dragged?? We also need a queryselector format that queries for css properties..
+//3. keydown enter produces click. I think this should be "a[href], input, button, textarea, select"?? is it the same as focusable?? no there are special rules here..
+//4. the deadcaps controller. this is a mess.. produces composition events and beforeinput (except in old firefox).
+//   deadcaps are currently actually handled by input and textarea..
+
+//todo
+// 1. we are lacking the support for regex in the event property query.
+//    This is important when we work with keydown default actions.
+// 2. we need to complete the full list of default actions.
+//    a. write up the default actions, and be careful not to add event controller default actions, such as contextmenu.
+//       examples of event controller default actions are contextmenu and keypress-to-click
+//       write a list of both the default actions that come from event controllers and elements here.
+// 3. add more and check the list of all exposed getDefaultAction methods.. we use modern chrome behavior as guide.
