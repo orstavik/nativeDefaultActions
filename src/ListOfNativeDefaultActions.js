@@ -1,3 +1,11 @@
+/**
+ * This pure data structure declare the native default actions in HTML.
+ *
+ * Two hybrid query formats are used to describe the structure:
+ * 1. eventQuery resembles "the query string format" used in urls.
+ * 2. elementQuery resembles "query selectors" used in CSS and JS to located elements in the DOM.
+ */
+
 import {event_dblclick} from "./polyfills/Event_dblclick.js";
 import{requestNavigation} from "./polyfills/HTMLAnchorElement_requestNavigation.js";
 import{requestCheckboxToggle} from "./polyfills/HTMLInputElement_requestCheckboxToggle.js";

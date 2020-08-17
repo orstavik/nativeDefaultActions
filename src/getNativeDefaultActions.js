@@ -1,3 +1,9 @@
+/**
+ * This set of pure functions turns the list of native default actions into a query engine that can
+ * extract active default actions from any event (with a composedPath()).
+ *
+ * The method primarily translates the custom format for eventQuery and elementQuery into callable JS functions.
+ */
 import {listOfDefaultActions} from "./ListOfNativeDefaultActions.js";
 
 function makeEventFilter(eventQuery) {
@@ -94,24 +100,51 @@ for (let {eventQuery, elementQuery, method, additive, irreversible} of listOfDef
   }
 }
 
+/**
+ * Gets the list of all native default actions that are associated with an event instance.
+ * @param e
+ * @returns {[]}
+ */
+export function getNativeDefaultActions(e) {
+  const defActs = listOfDefaultActions2.filter(({eventQuery}) => eventQuery(e));
+  const res = [];
+  for (let defAct of defActs) {
+    const [childIndex, parent, child] = defAct.elementQuery(e);
+    if (parent) {
+      res.push({
+        //todo the FORM default action uses the child index, but the details and option/select uses the parent. I think.
+        index: childIndex,
+        host: parent,
+        task: defAct.method(parent, child, e),
+        native: true,
+        additive: !!defAct.additive,
+        irreversible: !!defAct.irreversible,
+        eventQueryStr: defAct.eventQueryStr,
+        elementQueryStr: defAct.elementQueryStr
+      });
+    }
+  }
+  return res;
+}
+
+//att! mutates the input object.
+export function markExcludedActions(actions) {
+  let firstExclusive;
+  for (let defAct of actions) {
+    if (defAct.additive)
+      continue;
+    if (!firstExclusive)
+      firstExclusive = defAct;
+    else
+      defAct.excluded = true;
+  }
+  return actions;
+}
+
 export function getDefaultActions(e) {
-  return listOfDefaultActions2
-    .filter(({eventQuery}) => eventQuery(e))
-    .reduce((acc, defAct) => {
-      const [childIndex, parent, child] = defAct.elementQuery(e);
-      if (parent) {
-        acc.push({
-          index: childIndex,//todo the FORM default action uses the child index, but the details and option/select uses the parent. I think.
-          host: parent,
-          task: defAct.method(parent, child, e),
-          native: true,
-          additive: !!defAct.additive,
-          irreversible: !!defAct.irreversible,
-          eventQueryStr: defAct.eventQueryStr,
-          elementQueryStr: defAct.elementQueryStr
-        });
-      }
-      return acc;
-    }, [])
-    .sort((a, b) => a.index <= b.index);
+  let nativeDefaultActions = getNativeDefaultActions(e);
+  if (e.defaultPrevented)
+    nativeDefaultActions.forEach(defAct => defAct.prevented = true);
+  nativeDefaultActions = markExcludedActions(nativeDefaultActions);
+  return nativeDefaultActions.sort((a, b) => a.index <= b.index);
 }
