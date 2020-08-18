@@ -17,16 +17,33 @@ Exposition of native default actions and pure functions to ascribe from an event
 
 ## Drop it into devtools!
 
-The `getDefaultActions(event)` method can easily be tested in devtools without any installation! In *any* web app!!
+The `getDefaultActions(event)` method can easily be tested in devtools without any installation! 
+In *any* existing application!! To test it out, do:
+
+1. Open `wikipedia.org` and open devtools.
  
-1. Open the devtools console and write the following line of code (copy'n'paste):
+2. In the devtools console write (copy'n'paste):
 
 ```javascript
 import("https://cdn.jsdelivr.net/gh/orstavik/nativeDefaultActions@1.1.3/src/getNativeDefaultActions.js").then(m => window.getDefaultActions = m.getDefaultActions);
 ```
 
-This will import the necessary functions that can inspect any event for any native default actions.
+This will import the `getDefaultActions(e)` function so that you can inspect any event for native default actions.
 
-2. Then, when you debug an event listener simply write `getDefaultActions(e)` which will produce a list of all default actions associated with the event.
+3. Then you can either add your own event listener by writing this directly into devtools: 
+```javascript
+window.addEventListener("click", function(e){
+  debugger;
+  const defaultActions = getDefaultActions(e);
+  console.log(defaultActions); 
+  e.preventDefault();
+});
+```
 
-Att! The default action list is complete. This means that it will include such event listeners as `dblclick` which will trigger for all `click` events (because the `dblclick` default action must *observe all `click` events* to know when to create a new `dblclick` event).  
+Or you can add a debug point in one of your/the website's existing event listeners.
+  
+3. Then, trigger the event. If you have used the example above and added your own event listener to `wikipedia.org`, 
+then you can simply click on a link and see what happens.
+
+Att!! The default actions for synthetic events are included. 
+This means that functions such as `dblclick` are included in the list of default actions.  
