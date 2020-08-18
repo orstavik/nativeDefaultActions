@@ -143,8 +143,9 @@ export function markExcludedActions(actions) {
 
 export function getDefaultActions(e) {
   let nativeDefaultActions = getNativeDefaultActions(e);
+  nativeDefaultActions.sort((a, b) => a.index === b.index ? 0 : a.index < b.index ? -1 : 1);
   if (e.defaultPrevented)
     nativeDefaultActions.forEach(defAct => defAct.prevented = true);
   nativeDefaultActions = markExcludedActions(nativeDefaultActions);
-  return nativeDefaultActions.sort((a, b) => a.index <= b.index);
+  return nativeDefaultActions;
 }

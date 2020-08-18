@@ -119,6 +119,14 @@
     detailsSummaryTwo,
     detailsSummary
   } from "./useCaseDetailsSummary.js";
+  import {
+    detailsSummary as detailsSummary_3,
+    detailsH1 as detailsH1_3,
+    detailsSummaryAHref,
+    detailsSummaryAHrefH3,
+    detailsSummaryAHrefInputCheckbox,
+    detailsSummaryH2
+  } from "./useCaseTrippleConflicts.js";
 
   (async function () {
     function newMousedown() {
@@ -315,6 +323,151 @@
         irreversible: false,
         eventQueryStr: "click",
         elementQueryStr: "details > summary:first-of-type"
+      }], newClick],
+      [detailsH1_3, [{
+        index: 0,
+        host: "H1",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }], newClick],
+      [detailsSummary_3, [{
+        index: 0,
+        host: "SUMMARY",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }, {
+        index: 0,
+        host: "DETAILS",
+        task: "bound toggle",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click",
+        elementQueryStr: "details > summary:first-of-type"
+      }], newClick],
+      [detailsSummaryH2, [{
+        index: 0,
+        host: "H2",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }, {
+        index: 1,
+        host: "DETAILS",
+        task: "bound toggle",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click",
+        elementQueryStr: "details > summary:first-of-type"
+      }], newClick],
+      [detailsSummaryAHref, [{
+        index: 0,
+        host: "A",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }, {
+        index: 0,
+        host: "A",
+        task: "bound requestNavigation",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "a[href]"
+      }, {
+        index: 1,
+        host: "DETAILS",
+        task: "bound toggle",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click",
+        elementQueryStr: "details > summary:first-of-type",
+        excluded: true
+      }], newClick],
+      [detailsSummaryAHrefH3, [{
+        index: 0,
+        host: "H3",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }, {
+        index: 1,
+        host: "A",
+        task: "bound requestNavigation",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "a[href]"
+      }, {
+        index: 2,
+        host: "DETAILS",
+        task: "bound toggle",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click",
+        elementQueryStr: "details > summary:first-of-type",
+        excluded: true
+      }], newClick],
+      [detailsSummaryAHrefInputCheckbox, [{
+        index: 0,
+        host: "INPUT",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }, {
+        index: 0,
+        host: "INPUT",
+        task: "bound requestCheckboxToggle",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click",
+        elementQueryStr: "input[type=checkbox]"
+      }, {
+        index: 1,
+        host: "A",
+        task: "bound requestNavigation",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "a[href]",
+        excluded: true
+      }, {
+        index: 2,
+        host: "DETAILS",
+        task: "bound toggle",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click",
+        elementQueryStr: "details > summary:first-of-type",
+        excluded: true
       }], newClick],
       [aaH1, [{
         index: 0,

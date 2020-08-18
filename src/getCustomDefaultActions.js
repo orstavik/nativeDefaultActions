@@ -71,7 +71,7 @@ export function narrowPreventDefault(event, host) {
     throw new Error("A narrowPreventDefault is always associated with an event object.");
   if (!host)
     throw new Error("The narrowPreventDefault targets an event target host. The host element is usually the host node of a web component.");
-  if(event.defaultPrevented)
+  if (event.defaultPrevented)
     return; //no need anymore, everything has already been prevented.
   patchCustomDefaultAction(event);
   const narrowPreventeds = narrowPreventDefaults.get(event);
@@ -82,9 +82,9 @@ export function narrowPreventDefault(event, host) {
 
 export function getDefaultActions(event) {
   //1. merge the native and the custom default actions, native wins
-  const defActs = getNativeDefaultActions(event).concat(defaultActions.get(event) || []);
+  let defActs = getNativeDefaultActions(event).concat(defaultActions.get(event) || []);
   //2. sort in order of the propagation path, lowest wins
-  defActs.sort((a, b) => a.index <= b.index);
+  defActs.sort((a, b) => a.index === b.index ? 0 : a.index < b.index ? -1 : 1)
   //3a. mark regular preventDefault()
   if (event.defaultPrevented === true)
     defActs.forEach(defAct => !defAct.irreversible && (defAct.prevented = true));
