@@ -10,6 +10,7 @@ import {event_dblclick} from "./polyfills/Event_dblclick.js";
 import{requestNavigation} from "./polyfills/HTMLAnchorElement_requestNavigation.js";
 import{requestCheckboxToggle} from "./polyfills/HTMLInputElement_requestCheckboxToggle.js";
 import{requestSelect} from "./polyfills/HTMLSelectElement_requestSelect.js";
+import {toggle} from "./polyfills/HTMLDetailsElement_toggle.js";
 
 const focusableQuerySelector = "a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]";//option is not considered focusable, bad legacy design.
 
@@ -36,8 +37,8 @@ export const listOfDefaultActions = [{
   method: input => requestCheckboxToggle.bind(input)
 }, {
   eventQuery: "click",
-  elementQuery: "details > summary:first-of-type",//todo check the :first-of-type CSS selector
-  method: details => HTMLDetailsElement.prototype.toggle.bind(details)
+  elementQuery: "details > summary:first-of-type",
+  method: details => toggle.bind(details)
 }, {
   eventQuery: "mousedown?button=0&isTrusted=true",
   elementQuery: "select > option, select > optgroup > option",

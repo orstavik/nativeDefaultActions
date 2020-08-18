@@ -113,6 +113,12 @@
     aaCheckbox,
     aaH1
   } from "./useCaseAA.js";
+  import {
+    detailsH1,
+    detailsH2,
+    detailsSummaryTwo,
+    detailsSummary
+  } from "./useCaseDetailsSummary.js";
 
   (async function () {
     function newMousedown() {
@@ -261,6 +267,55 @@
         eventQueryStr: "click",
         elementQueryStr: "form button[type=submit], form input[type=submit]"
       }], newClick],
+      [detailsH1, [{
+        index: 0,
+        host: "H1",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }], newClick],
+      [detailsH2, [{
+        index: 0,
+        host: "H2",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }], newClick],
+      [detailsSummaryTwo, [{
+        index: 0,
+        host: "SUMMARY",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }], newClick],
+      [detailsSummary, [{
+        index: 0,
+        host: "SUMMARY",
+        task: "bound event_dblclick",
+        native: true,
+        additive: true,
+        irreversible: true,
+        eventQueryStr: "click?isTrusted=true",
+        elementQueryStr: "*"
+      }, {
+        index: 0,
+        host: "DETAILS",
+        task: "bound toggle",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "click",
+        elementQueryStr: "details > summary:first-of-type"
+      }], newClick],
       [aaH1, [{
         index: 0,
         host: "H1",
@@ -354,8 +409,6 @@
       }], newClick]
     ]);
 
-    await runTest2([], getDefaultActionsTestIsTrusted, [
-
-    ]);
+    await runTest2([], getDefaultActionsTestIsTrusted, []);
   })();
 </script>
