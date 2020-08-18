@@ -12,9 +12,10 @@ function replacer(key, value) {
   return value;
 }
 
-const OG = WeakMap.prototype.get;
+let OG;
 
 function spoofIsTrusted(e) {
+  OG = WeakMap.prototype.get;
   WeakMap.prototype.get = function (obj) {
     return OG.call(this, obj?.spoofyDoo || obj);
   }
@@ -46,7 +47,7 @@ export const getDefaultActionsTestIsTrusted = {
       const actions = getDefaultActions(eIsTrusted);
       unspoofIsTrusted();
       const str = JSON.stringify(actions, replacer);
-      console.log(str)
+      console.log(str);
       res.push(str);
       e.preventDefault(); //we don't want these tests to run the default actions.
     });

@@ -3,14 +3,19 @@ class AA extends HTMLElement {
     super();
     this.attachShadow({mode: "open"});
     this.shadowRoot.innerHTML = "<slot></slot>";
-    this.addEventListener("click", function(e){
-
-      if(this.hasAttribute("href"))
-        addDefault && addDefault(e, this.requestNavigate.bind(this), this, {additive: false, irreversible: false, native: "kinda"});
-    });
+    this.addEventListener("click", this.onClick.bind(this), {unstoppable: true});
   }
 
-  requestNavigate(targetWindow){
+  onClick(e) {
+    // if (!e.isTrusted)   //isTrusted is ignored for testing purposes
+    //   return;
+    if (!this.hasAttribute("href"))//todo check if this is checked during propagation or at the time of the default action afterwards.
+      return;
+    if (window["addDefault"])
+      addDefault(e, this.requestNavigate.bind(this), this, {additive: false, irreversible: false, native: "kinda"});
+  }
+
+  requestNavigate(targetWindow) {
     const href = new URL(this.getAttribute("href"));
     document.open(href, targetWindow);
   }
