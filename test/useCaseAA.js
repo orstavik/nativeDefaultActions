@@ -4,12 +4,16 @@ class AA extends HTMLElement {
     this.attachShadow({mode: "open"});
     this.shadowRoot.innerHTML = "<slot></slot>";
     this.addEventListener("click", this.onClick.bind(this), {unstoppable: true});
+    // this.addEventListener("click", function (e) { // the browser checks to see if the href attribute is set at the beginning of the event propagation.
+    //   if (e.composedPath().indexOf(this) >= 0)    // In Chrome, if remember correctly. This is very hard to accomplish using event listeners.
+    //     this.onClick(e);                          // To accomplish this, we would need a first, capture event listener on the window,
+    // }.bind(this), {capture: true, first: true});  // that checked all click events to see if they contained this a element.
   }
 
   onClick(e) {
     // if (!e.isTrusted)   //isTrusted is ignored for testing purposes
     //   return;
-    if (!this.hasAttribute("href"))//todo check if this is checked during propagation or at the time of the default action afterwards.
+    if (!this.hasAttribute("href"))
       return;
     if (window["addDefault"])
       addDefault(e, this.requestNavigate.bind(this), this, {additive: false, irreversible: false, native: "kinda"});

@@ -30,11 +30,11 @@ export function prepareDefaultActions(e) {
 function runDefaultActions(e, async) {
   const tasks = prepareDefaultActions(e);
   resetEvent(e);
-  if (async)
-    nextMesoTicks(tasks);
+  if (async && tasks.length)
+    nextMesoTicks(tasks, 1);//todo fix mesoticks.
   else {
     for (let task of tasks)
-      task();
+      task();//todo if the task throws an error, then the other default actions should still run. That means that we should do the dispatchError logic here..
   }
 }
 

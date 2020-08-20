@@ -30,7 +30,7 @@ import("https://cdn.jsdelivr.net/gh/orstavik/nativeDefaultActions@1.1.3/src/getN
 
 This will import the `getDefaultActions(e)` function so that you can inspect any event for native default actions.
 
-3. Then you can either add your own event listener by writing this directly into devtools: 
+3. Then you can debug your events using `getDefaultActions(e)`. You can do so by either placing a `debugger` in one of your  website's existing event listeners, or by adding your own debug event listener directly from devtools (copy'n'paste) the following code: 
 ```javascript
 window.addEventListener("click", function(e){
   debugger;
@@ -40,10 +40,9 @@ window.addEventListener("click", function(e){
 });
 ```
 
-Or you can add a debug point in one of your/the website's existing event listeners.
-  
-3. Then, trigger the event. If you have used the example above and added your own event listener to `wikipedia.org`, 
-then you can simply click on a link and see what happens.
+4. Then, trigger the event and look at the result from the `getDefaultActions(e)`. If you have used the example above and added your own event listener to `wikipedia.org`, then you can simply click on a link and see what happens. The list should contain two defaultActions:
+   1. the `dblclick` controller (a generic default action that applies to all `click` events on all `HTMLElements`) and
+   2. the `requestNavigate` default action associated with `<a href>` elements.  
 
 Att!! The default actions for synthetic events are included. 
 This means that functions such as `dblclick` are included in the list of default actions.  
