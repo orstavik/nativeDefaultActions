@@ -1,12 +1,7 @@
 
-//<select>
-//  <option1>
-//  <div>
-//    <option2>
-//  <optgroup>
-//    <option3>
-//    <span>
-//      <option4>
+//<form>
+//  <button type=[buttonType]>
+//  <input type=[buttonType]>
 function makeFormBranch(buttonType) {
   const form = document.createElement("form");
   const button = document.createElement("button");
