@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<details>
+  <summary>one </summary>
+  hello sunshine
+  <summary id="four"> four </summary>
+</details>
+
+<summary id="two">two </summary>
+<summary id="three">three </summary>
+
+<script>
+  const details = document.querySelector("details");
+  const one = document.querySelector("details summary");
+  const two = document.querySelector("#two");
+  const three = document.querySelector("#three");
+  const four = document.querySelector("#four");
+
+  window.addEventListener("click", e => console.log(e.type, e.target), true);
+  window.addEventListener("click", e => details.prepend(two), true);
+
+  one.click();
+
+  setTimeout(function(){
+    three.addEventListener("click", e=> details.prepend(three));
+    three.click();
+  }, 2000);
+  setTimeout(function(){
+    four.addEventListener("click", e=> details.prepend(four));
+    four.click();
+  }, 4000);
+  //todo this doesn't run the default action. This means that the default action will check the state of the DOM post propagation.
+  //todo this means that the default action only registers the existense of an event, and doesn't filter the event based on other data
+</script>
+</body>
+</html>

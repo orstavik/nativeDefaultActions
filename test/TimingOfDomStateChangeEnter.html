@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<form action="#hello">
+  <input type="text">
+  <input type="submit" formaction="#sunshine">
+</form>
+<script>
+  const inputTypeSubmit = document.querySelector("input[type=submit]");
+  const inputTypeText = document.querySelector("input[type=text]");
+  window.addEventListener("keydown", e => console.log(e.type, e.key, e.target), true);
+
+  // window.addEventListener("keydown", e => (inputTypeText.type = "reset"), true);
+  // todo if we do this, then the click will be on the inputTypeReset??!!
+  // todo this means that the type state of the enter event will not match the action.
+  // todo this means that the attribute is not locked at the enter.
+  // todo this differs from the a[href] element, most likely... No.. It doesn't.
+  // todo the attribute is not locked and changes to it will therefore alter the reality of the default action.
+  // todo attributes are not locked at the selection of default action.
+  // todo selection of default action is really really basic. Only element type.. tagName.. first-of-type..
+  // window.addEventListener("keydown", e=> (inputTypeSubmit.type = "email"), true);
+  // todo when we change this, it results in no click event..
+  // todo This means that the test to find the clickable is done postPropagation.
+  // todo this means that it is a cascade, first the keydown, then the click, then the submit
+
+  // window.addEventListener("keydown", e => e.key === "Enter" && console.log(e.type, "preventing", e.preventDefault()), true);
+  window.addEventListener("click", e => console.log(e.type, e.target), true);
+
+</script>
+</body>
+</html>

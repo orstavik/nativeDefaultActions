@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<a>
+  sunshine
+</a>
+<script>
+  const a = document.querySelector("a");
+  window.addEventListener("click", e => console.log(e.type, e.target), true);
+  window.addEventListener("click", e => a.setAttribute("href", "#hello"));
+</script>
+</body>
+</html>
