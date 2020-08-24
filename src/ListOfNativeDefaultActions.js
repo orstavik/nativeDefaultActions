@@ -11,6 +11,7 @@ import{requestNavigation} from "./polyfills/HTMLAnchorElement_requestNavigation.
 import{requestCheckboxToggle} from "./polyfills/HTMLInputElement_requestCheckboxToggle.js";
 import{requestSelect} from "./polyfills/HTMLSelectElement_requestSelect.js";
 import {toggle} from "./polyfills/HTMLDetailsElement_toggle.js";
+import {defaultButton} from "./polyfills/HTMLFormElement_defaultButton.js";
 
 const focusableQuerySelector = "a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]";//option is not considered focusable, bad legacy design.
 
@@ -65,6 +66,24 @@ export const listOfDefaultActions = [{
   eventQuery: "click",                    //isTrusted is not necessary for submit
   elementQuery: "form button[type=submit], form input[type=submit]",
   method: (form, button) => HTMLFormElement.prototype.requestSubmit.bind(form, button)
+},
+  //enter-to-click default actions.
+  //The .isTrusted property is transferred from the keydown to the click event. This is not possible in JS.
+  //todo enter on select, summary?? it must be a focusable element??
+  //todo could it be simplified to something like ":focus"?? that it just turns anything that has `:focus` to be clicked?? That would be good...
+  //todo and then there would be a special case for ":focus" for other input elements such as text... No.. I think this is much more semantic than that.. More complex.
+{
+  eventQuery: "keydown?key=Enter&isTrusted=true",
+  elementQuery: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus",
+  method: (form, button) => HTMLElement.prototype.click.bind(button, {isTrusted: true})
+}, {
+  eventQuery: "keydown?key=Enter&isTrusted=true",
+  elementQuery: "a[href]:focus",
+  method: a => HTMLElement.prototype.click.bind(a, {isTrusted: true})
+}, {
+  eventQuery: "keydown?key=Enter&isTrusted=true",
+  elementQuery: "form:state(defaultButton) input[type=text]:focus",
+  method: (form, inputText) => HTMLElement.prototype.click.bind(defaultButton(form), {isTrusted: true})
 }];
 //tab?? does this produce a default action?? I think yes
 //other characters for input and textarea..

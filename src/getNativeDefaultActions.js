@@ -5,6 +5,16 @@
  * The method primarily translates the custom format for eventQuery and elementQuery into callable JS functions.
  */
 import {listOfDefaultActions} from "./ListOfNativeDefaultActions.js";
+import {defaultButton} from "./polyfills/HTMLFormElement_defaultButton.js";
+
+function matches(eventTarget, query) {
+  if (!(eventTarget instanceof HTMLElement))
+    return false;
+  if (query === "form:state(defaultButton)")
+    return eventTarget instanceof HTMLFormElement && !!defaultButton(eventTarget);
+  //todo here it is possible to match a couple of other non-existing :pseudo codes, such as :tabbable and :focusable
+  return eventTarget.matches(query);
+}
 
 function makeEventFilter(eventQuery) {
   const question = eventQuery.indexOf("?");
@@ -31,7 +41,7 @@ function makeDirectChildFilter(matchers) {
       for (; j < matchers.length; j++) {
         let matcher = matchers[j];
         const checkTarget = targets[i + j];
-        if (!(checkTarget instanceof HTMLElement) || !checkTarget.matches(matcher))
+        if (!matches(checkTarget, matcher))
           continue targetLoop;
       }
       j--;
@@ -53,7 +63,7 @@ function makeDescendantChildFilter(matchers) {
         const parentTarget = targets[j];
         if (!(parentTarget instanceof HTMLElement))
           continue targetLoop;
-        if (parentTarget.matches(parent))
+        if (matches(parentTarget, parent))
           return [i, parentTarget, childTarget];
       }
     }
@@ -66,7 +76,7 @@ function makeSingularFilter(matcher) {
     const targets = e.composedPath();                     //this implies access to closed shadowRoots
     for (let i = 0; i < targets.length; i++) {
       const checkTarget = targets[i];
-      if (checkTarget instanceof HTMLElement && checkTarget.matches(matcher))
+      if (matches(checkTarget, matcher))
         return [i, targets[i], undefined];
     }
     return [];
@@ -82,7 +92,7 @@ function makeElementFilter(query) {
     return makeDescendantChildFilter(matchers.reverse());
   if (matchers.length === 1)
     return makeSingularFilter(query);
-  throw new SyntaxError("element filter syntax error");
+  throw new SyntaxError("element filter syntax error: " + query);
 }
 
 let listOfDefaultActions2 = [];

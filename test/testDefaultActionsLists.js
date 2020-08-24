@@ -12,12 +12,18 @@ function replacer(key, value) {
   return value;
 }
 
-let OG;
+let WeakMapOG;
+let matchesOG;
 
 function spoofIsTrusted(e) {
-  OG = WeakMap.prototype.get;
+  matchesOG = HTMLElement.prototype.matches;
+  HTMLElement.prototype.matches = function(str){
+    str = str.replace(":focus", "");
+    return matchesOG.call(this, str);
+  }
+  WeakMapOG = WeakMap.prototype.get;
   WeakMap.prototype.get = function (obj) {
-    return OG.call(this, obj?.spoofyDoo || obj);
+    return WeakMapOG.call(this, obj?.spoofyDoo || obj);
   }
   return new Proxy(e, {
     get(obj, key) {
@@ -32,7 +38,8 @@ function spoofIsTrusted(e) {
 }
 
 function unspoofIsTrusted() {
-  WeakMap.prototype.get = OG;
+  WeakMap.prototype.get = WeakMapOG;
+  HTMLElement.prototype.matches = matchesOG;
 }
 
 export const getDefaultActionsTestIsTrusted = {
@@ -47,7 +54,7 @@ export const getDefaultActionsTestIsTrusted = {
       const actions = getDefaultActions(eIsTrusted);
       unspoofIsTrusted();
       const str = JSON.stringify(actions, replacer);
-      console.log(str);
+      // console.log(str);
       res.push(str);
       e.preventDefault(); //we don't want these tests to run the default actions.
     });
@@ -66,7 +73,7 @@ export const getDefaultActionsTest = {
       //to get the dblclick we need to spoof the isTrusted of the click event.
       const actions = getDefaultActions(e);
       const str = JSON.stringify(actions, replacer);
-      console.log(str)
+      // console.log(str)
       res.push(str);
       e.preventDefault(); //we don't want these tests to run the default actions.
     });

@@ -1,16 +1,20 @@
 
 //<form>
+//  <input type=text>
 //  <button type=[buttonType]>
 //  <input type=[buttonType]>
 function makeFormBranch(buttonType) {
   const form = document.createElement("form");
+  const text = document.createElement("input");
+  text.type = "text";
   const button = document.createElement("button");
   button.type = buttonType;
   const input = document.createElement("input");
   input.type = buttonType;
+  form.appendChild(text);
   form.appendChild(button);
   form.appendChild(input);
-  return {form, input, button};
+  return {form, text, input, button};
 }
 
 //form
@@ -45,6 +49,15 @@ export function formButtonSubmit() {
 export function formInputSubmit() {
   const {form, input} = makeFormBranch("submit");
   const usecase = [input, form];
+  Object.freeze(usecase);
+  return usecase;
+}
+
+//form
+//  input[type=text]
+export function formInputText() {
+  const {form, text} = makeFormBranch("submit");
+  const usecase = [text, form];
   Object.freeze(usecase);
   return usecase;
 }

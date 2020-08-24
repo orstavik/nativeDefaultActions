@@ -35,8 +35,12 @@
           testResults[systemName] = 1
         else if (result === native)
           testResults[systemName] = undefined
-        else
+        else {
+          console.log("systemName: ", systemName)
+          console.log("expected: ", expected)
+          console.log("result: ", result)
           testResults[systemName] = result + " != " + expected;
+        }
       }
     }
     console.table(results);
@@ -50,12 +54,12 @@
       for (let i = 0; i < usecasesExpects.length; i++) {
         let [usecase, expected, event] = usecasesExpects[i];
 
-        setValue(results, testName + ":" + usecase.name, "expected", JSON.stringify(expected));
+        setValue(results, testName + ":" + usecase.name + ":" + event.name, "expected", JSON.stringify(expected));
 
         let result = [];
         fun(result, usecase, event());
         await nextTick2(() => 1);  //just wait a t1ck, for any queued propagation to complete
-        setValue(results, testName + ":" + usecase.name, system.name, result.join(""));
+        setValue(results, testName + ":" + usecase.name + ":" + event.name, system.name, result.join(""));
         await nextTick2(() => 1);  //just wait a t0ck, for any queued tasks of the propagation to complete
       }
       resetSystem();
@@ -107,7 +111,8 @@
     formButtonReset,
     formInputReset,
     formButtonSubmit,
-    formInputSubmit
+    formInputSubmit,
+    formInputText
   } from "./useCaseFormNativeDefaultActions.js";
   import {
     aaCheckbox,
@@ -135,6 +140,10 @@
 
     function newClick() {
       return new MouseEvent("click", {button: 0, composed: true, bubbles: true, cancelable: true});
+    }
+
+    function newEnter() {
+      return new KeyboardEvent("keydown", {key: "Enter", composed: true, bubbles: true, cancelable: true});
     }
 
     await runTest2([
@@ -507,12 +516,62 @@
       }, {
         additive: false,
         irreversible: false,
-        native: "kinda",
+        native: "kinda",              //todo remove all kinda references? i think yes.
         task: "bound requestNavigate",
         host: "A-A",
         index: 3,
         "excluded": true
       }], newClick],
+      [formButtonReset, [{
+        index: 0,
+        host: "FORM",
+        task: "bound click",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "keydown?key=Enter&isTrusted=true",
+        elementQueryStr: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus"
+      }], newEnter],
+      [formInputReset, [{
+        index: 0,
+        host: "FORM",
+        task: "bound click",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "keydown?key=Enter&isTrusted=true",
+        elementQueryStr: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus"
+      }], newEnter],
+      [formButtonSubmit, [{
+        index: 0,
+        host: "FORM",
+        task: "bound click",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "keydown?key=Enter&isTrusted=true",
+        elementQueryStr: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus"
+      }], newEnter],
+      [formInputSubmit, [{
+        index: 0,
+        host: "FORM",
+        task: "bound click",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "keydown?key=Enter&isTrusted=true",
+        elementQueryStr: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus"
+      }], newEnter],
+      [formInputText, [{
+        index: 0,
+        host: "FORM",
+        task: "bound click",
+        native: true,
+        additive: false,
+        irreversible: false,
+        eventQueryStr: "keydown?key=Enter&isTrusted=true",
+        elementQueryStr: "form:state(defaultButton) input[type=text]:focus"
+      }], newEnter],
     ]);
 
     await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTest, [
