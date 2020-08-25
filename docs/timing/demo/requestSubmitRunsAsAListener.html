@@ -1,10 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
 <form action="#sunshine">
   <button type="submit">Hello</button>
 </form>
@@ -30,10 +23,6 @@
   //1. we reset location.hash. This is to ensure that the browser will not reload the test page during the test.
   location.hash = "#";
   //prints hashchange events, just ignore them
-  // 1 hashchange propagation hash=
-  // 1 hashchange microtask hash=
-  // 2 hashchange propagation hash=
-  // 2 hashchange microtask hash=
 
   //2. we trigger the test
   setTimeout(function () {
@@ -45,87 +34,4 @@
       console.log("after test (async)", "hash=" + location.hash);
     });
   }, 1000);
-  //before test hash=
-  //1 click propagation hash=
-  //2 click propagation hash=
-  //1 submit propagation hash=
-  //2 submit propagation hash=
-  //after test (sync) hash=
-  //1 click microtask hash=
-  //2 click microtask hash=
-  //1 submit microtask hash=
-  //2 submit microtask hash=
-  //after test (async) hash=#sunshine
-  //1 hashchange propagation hash=#sunshine
-  //1 hashchange microtask hash=#sunshine
-  //2 hashchange propagation hash=#sunshine
-  //2 hashchange microtask hash=#sunshine
 </script>
-
-This demo illustrates the timing of default actions. And the timing of event listeners. Both async and sync. In one
-demo. Do not be saddened if you find it a bit hard to understand. Once you fully understand this demo, you understand
-quite a bit.
-
-First, we look at the log:
-<pre>
-E prop-normal hashchange hash=
-E prop-micro hashchange hash=
-F prop-normal hashchange hash=
-F prop-micro hashchange hash=
----------------------------
-before test hash=
-A prop-normal click hash=
-B prop-normal click hash=
-C prop-normal submit hash=
-D prop-normal submit hash=
-after test (sync) hash=
-A prop-micro click hash=
-B prop-micro click hash=
-C prop-micro submit hash=
-D prop-micro submit hash=
-E prop-normal hashchange hash=#sunshine
-E prop-micro hashchange hash=#sunshine
-F prop-normal hashchange hash=#sunshine
-F prop-micro hashchange hash=#sunshine
-after test (async) hash=#sunshine
-</pre>
-
-The first four lines is printed when we reset the test page.
-When we call `location.hash = "#";`, we get this output.
-We must reset the test page in this way to ensure that the browser will not reload the test page *during* the test.
-Just ignore these lines, they are of no importance.
-
-This leaves us with the following output of the test
-<pre>
-before test hash=
-A prop-normal click hash=
-B prop-normal click hash=
-C prop-normal submit hash=
-D prop-normal submit hash=
-after test (sync) hash=
-A prop-micro click hash=
-B prop-micro click hash=
-C prop-micro submit hash=
-D prop-micro submit hash=
-E prop-normal hashchange hash=#sunshine
-E prop-micro hashchange hash=#sunshine
-F prop-normal hashchange hash=#sunshine
-F prop-micro hashchange hash=#sunshine
-after test (async) hash=#sunshine
-</pre>
-
-<ol>
-  <li>`before test hash=`: This is the state of the page and DOM when the test begins. No surprises here.</li>
-  <li>`A prop-normal click hash=`, `B prop-normal click hash=`.
-    The `click` event triggered by `button.click()` will of course dispatch a `click` event that will trigger the two
-    event listeners we have added for `click` events. You might be surprised that `A prop-micro hash=` is not
-    printed between the two `A prop-normal` and `B prop-normal`, but this is because the `.click()` method dispatches a `sync` event and sync events run all event listeners first *before* any micro tasks are processed.  </li>
-  <li>But! Far more surprising than `C prop-normal submit hash=`, `D prop-normal submit hash=` runs *before* the micro tasks from the `click` event listeners. Why? Well, the answer is quite simple. The `<button type="submit">` has a default action associated with it when it runs. This default action is essentially queued *exactly* like an event listener! The default action of the `HTMLButtonElement` when any `click` event propagates with it as `target` is to call `requestSubmit` on its `<form>` owner/ancestor element.</form>
-
-
-    Then we call `button.click()`. This causes a `click` event to be dispatched on the button. The click propagates
-    synchronously, so we get the next two
-</ol>
-
-</body>
-</html>
