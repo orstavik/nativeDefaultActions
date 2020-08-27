@@ -10,10 +10,9 @@ export const clickNavigateDefaultAction = {
   defaultAction: function navigate(event, element) {
     document.open(element.href);
   },
-  lowestWins: true,
+  repeat: "lowestWins",
   preventable: true,
-  targetOnly: false,
-  composed: true
+  targetOnly: false
 };
 
 export const auxclickNavigateDefaultAction = {
@@ -29,10 +28,10 @@ export const auxclickNavigateDefaultAction = {
   defaultAction: function navigate_blank(event, element) {
     document.open(element.href, "_BLANK");
   },
-  lowestWins: false,   //TODO BUG in browsers!!! should be TRUE. Report this bug in FF and add the number here
+  repeat: "once",   //TODO BUG in browsers!!! should be TRUE. Report this bug in FF and add the number here
   preventable: true,
   targetOnly: false,
-  composed: true
+
 };
 
 export const enterToClickDefaultAction = {
@@ -52,8 +51,8 @@ export const enterToClickDefaultAction = {
     //todo which other properties from the event needs to be transferred??
     element.dispatchEvent(click);
   },
-  lowestWins: true,
+  repeat: "lowestWins",
   preventable: true,
   targetOnly: false,
-  composed: true
+
 };

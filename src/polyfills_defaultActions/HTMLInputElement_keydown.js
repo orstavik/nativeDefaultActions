@@ -40,8 +40,7 @@ export const enterOnInputTextDefaultAction = {
       defaultButton.dispatchEvent(click);
     el.form.requestSubmit();
   },
-  lowestWins: true,   //todo are there any edge cases here where this might not be true??  make tests for this
-  composed: true,     //todo are there any edge cases here where this might not be true??  make tests for this
+  repeat: "lowestWins",   //todo are there any edge cases here where this might not be true??  make tests for this
   preventable: true,
   targetOnly: true    //todo are there any edge cases here where this might not be true??  make tests for this
 };
@@ -62,9 +61,8 @@ export const enterOnInputSubmitResetButtonDefaultAction = {
     click.isTrusted = true;
     el.dispatchEvent(click);
   },
-  lowestWins: true,
-  composed: true,
+  repeat: "lowestWins",
   preventable: true,
-  targetOnly: true
+  targetOnly: true //todo how do we want to handle the targetOnly on the input elements?? it is more a question for select style inputs.
 };
 

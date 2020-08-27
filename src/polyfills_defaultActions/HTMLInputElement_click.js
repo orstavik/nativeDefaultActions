@@ -41,8 +41,7 @@ export const clickInputDefaultAction = {
     //  If we could inspect the inner shadowDOM of these native input elements,
     //  we could assess whether or not
   },
-  lowestWins: true,
-  composed: true,
+  repeat: "lowestWins",
   preventable: true,
-  targetOnly: false
+  targetOnly: false //todo could be set to true, as the input is a cul-de-sac element.
 };

@@ -39,8 +39,7 @@ export const mousedownOptionDefaultAction = {
     const select = el.parentNode instanceof HTMLOptGroupElement ? el.parentNode.parentNode : el.parentNode;
     requestSelect.call(select, el);
   },
-  lowestWins: true,
-  composed: true,
+  repeat: "lowestWins",
   preventable: true,
   targetOnly: true
 };

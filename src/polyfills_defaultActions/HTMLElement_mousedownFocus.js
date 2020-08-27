@@ -11,8 +11,7 @@ export const mousedownFocusDefaultAction = {
   defaultAction: function MousedownFocuses(event, element) {
     element.focus();
   },
-  lowestWins: false,
+  repeat: "once", //todo this should be repeat: document
   preventable: true,  //todo verify an make test case
-  targetOnly: false,
-  composed: true     //todo here is smart usecase for a bounced focus event instead..
+  targetOnly: false
 };

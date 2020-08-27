@@ -9,8 +9,7 @@ export const clickSummaryDefaultAction = {
   defaultAction: function summaryTogglesDetails(event, element) {
     element.parentNode.open = !element.parentNode.open;
   },
-  lowestWins: true,
-  composed: true,
+  repeat: "lowestWins",
   preventable: true,
   targetOnly: false
 };

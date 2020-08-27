@@ -25,8 +25,7 @@ export const dblclickDefaultAction = {
     //copy over other event properties from click
     event.target.dispatchEvent(dblclick);
   },
-  lowestWins: false,
+  repeat: "once",
   preventable: false,
-  targetOnly: true,
-  composed: true
+  targetOnly: true
 };

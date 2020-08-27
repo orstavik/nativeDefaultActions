@@ -12,8 +12,7 @@ export const clickButtonDefaultAction = {
     else if (element.type === "reset")
       element.form.reset();
   },
-  lowestWins: true,
-  composed: true,
+  repeat: "lowestWins",
   preventable: true,
   targetOnly: false
 };
