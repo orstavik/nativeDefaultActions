@@ -39,14 +39,13 @@ function makeOne(cb, target, type) {
   return function (e) {
     //a. add the cb to the list to be added.
     const cbs = event_cbs.get(e);
-    cbs ? cbs.push({cb, target}) : event_cbs.set(e, [{cb, target}]);
+    cbs ? cbs.unshift({cb, target}) : event_cbs.set(e, [{cb, target}]);
     //b. add the dynamic listener possible
     const lastTarget = lastPropagationTarget(e);
     if (lastTarget !== target) {
-      let eKey = e;
       //if something goes wrong, then this event listener remains.. we need to ensure that it is only active for the current event
       const three = function (e) {
-        e === eKey && runCb.call(target, e);
+        runCb.call(target, e);
       };
       lastTarget.addEventListener(type, three, options3);
     }
