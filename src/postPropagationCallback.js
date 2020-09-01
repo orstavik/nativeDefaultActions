@@ -1,3 +1,19 @@
+export const stopPropagationOG = Event.stopPropagation;
+export const stopImmediatePropagationOG = Event.stopImmediatePropagation;
+
+Object.defineProperty(Event.prototype, {
+  stopPropagation: {
+    value: function () {
+      console.warn(".stopPropagation() should be deprecated.");
+    }
+  },
+  stopImmediatePropagation: {
+    value: function () {
+      console.warn(".stopImmediatePropagation() should be deprecated.");
+    }
+  }
+});
+
 import {lastPropagationTarget} from "./pureFunctions.js";
 
 //register of the postPropagation cbs for this particular event.
@@ -14,7 +30,7 @@ function runCb(e) {
   let i = 1;
   while (cbs[i] && cbs[i].target === firstTarget)
     i++;
-  const [{cb, target}] = cbs.splice(i-1, 1);
+  const [{cb, target}] = cbs.splice(i - 1, 1);
   cb.call(target, e);
 }
 
