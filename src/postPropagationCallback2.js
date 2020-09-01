@@ -1,12 +1,24 @@
 import {lastPropagationTarget} from "./pureFunctions.js";
 
-const target_cb_type_oneTwo = new WeakMap();
+//register of the postPropagation cbs for this particular event.
 const event_cbs = new WeakMap();
+
+function registerEventCbTarget(e, cb, target) {
+  const cbs = event_cbs.get(e);
+  cbs ? cbs.unshift({cb, target}) : event_cbs.set(e, [{cb, target}]);
+}
 
 function runCb(e) {
   const {cb, target} = event_cbs.get(e).pop();
   cb.call(target, e);
 }
+
+//register of the postPropagation one-two event listeners per target.
+//necessary to:
+//  a) removePostPropagationCallbacks, and
+//  b) prevent the same cb object being added multiple times for the same event type and eventTarget
+//     (same rule as for regular event listeners).
+const target_cb_type_oneTwo = new WeakMap();
 
 function getPostPropagationRegister(target, cb, type) {
   return target_cb_type_oneTwo.get(target)?.get(cb)?.get(type);
@@ -21,25 +33,17 @@ function registerPropagationCallback(target, cb, type, one, two) {
   let type_oneTwo = cb_type_oneTwo.get(cb);
   if (!type_oneTwo)
     cb_type_oneTwo.set(target, type_oneTwo = new Map());
-  type_oneTwo.set(type, [one, two]);  //we can skip the last test, as this was done in the first step.
+  type_oneTwo.set(type, [one, two]);  //we can skip the last test, as this was done in the previous step.
 }
 
 const options1 = {capture: true, unstoppable: true};
 const options2 = {capture: false, last: true, unstoppable: true};
 const options3 = {capture: false, last: true, unstoppable: true, once: true};
 
-function makeTwo(target) {
-  return function (e) {
-    const lastTarget = lastPropagationTarget(e);
-    lastTarget === target && runCb.call(target, e);
-  };
-}
-
 function makeOne(cb, target, type) {
-  return function (e) {
+  return function postPropagationOne(e) {
     //a. add the cb to the list to be added.
-    const cbs = event_cbs.get(e);
-    cbs ? cbs.unshift({cb, target}) : event_cbs.set(e, [{cb, target}]);
+    registerEventCbTarget(e, cb, target);
     //b. add the dynamic listener possible
     const lastTarget = lastPropagationTarget(e);
     if (lastTarget !== target) {
@@ -49,6 +53,13 @@ function makeOne(cb, target, type) {
       };
       lastTarget.addEventListener(type, three, options3);
     }
+  };
+}
+
+function makeTwo(target) {
+  return function postPropagationTwo(e) {
+    const lastTarget = lastPropagationTarget(e);
+    lastTarget === target && runCb.call(target, e);
   };
 }
 
@@ -66,7 +77,7 @@ export function addPostPropagationCallback(target, type, cb) {
 }
 
 export function removePostPropagationCallback(target, type, cb) {
-  const [one, two] = target_cb_type_oneTwo.get(target)?.get(cb)?.get(type);
+  const [one, two] = getPostPropagationRegister(target, cb, type);
   if (one) {
     target.removeEventListener(type, one, true);
     target.removeEventListener(type, two, false);
