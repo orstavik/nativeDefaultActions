@@ -24,13 +24,19 @@ function registerPropagationCallback(target, cb, type, one, two) {
   type_oneTwo.set(type, [one, two]);  //we can skip the last test, as this was done in the first step.
 }
 
-export function addPostPropagationCallback(target, type, cb) {
-  //1. just exit, if the same combination target, type, cb is already added
-  if (getPostPropagationRegister(target, cb, type))
-    return;
+const options1 = {capture: true, unstoppable: true};
+const options2 = {capture: false, last: true, unstoppable: true};
+const options3 = {capture: false, last: true, unstoppable: true, once: true};
 
-  //2. make the stateful one two (three) closures
-  const one = function (e) {
+function makeTwo(target) {
+  return function (e) {
+    const lastTarget = lastPropagationTarget(e);
+    lastTarget === target && runCb.call(target, e);
+  };
+}
+
+function makeOne(cb, target, type) {
+  return function (e) {
     //a. add the cb to the list to be added.
     const cbs = event_cbs.get(e);
     cbs ? cbs.push({cb, target}) : event_cbs.set(e, [{cb, target}]);
@@ -42,21 +48,25 @@ export function addPostPropagationCallback(target, type, cb) {
       const three = function (e) {
         e === eKey && runCb.call(target, e);
       };
-      lastTarget.addEventListener(type, three, {capture: false, last: true, unstoppable: true, once: true});
+      lastTarget.addEventListener(type, three, options3);
     }
   };
-  const two = function (e) {
-    const lastTarget = lastPropagationTarget(e);
-    lastTarget === target && runCb.call(target, e);
-  };
-  //3. add and cache one two as event listeners
-  target.addEventListener(type, one, {capture: true, unstoppable: true});
-  target.addEventListener(type, two, {capture: false, last: true, unstoppable: true});
+}
+
+export function addPostPropagationCallback(target, type, cb) {
+  //1. just exit, if the same combination target, type, cb is already added
+  if (getPostPropagationRegister(target, cb, type))
+    return;
+
+  //2. make the stateful one two (three) closures
+  const one = makeOne(cb, target, type);
+  const two = makeTwo(target);
+  target.addEventListener(type, one, options1);
+  target.addEventListener(type, two, options2);
   registerPropagationCallback(target, cb, type, one, two);
 }
 
 export function removePostPropagationCallback(target, type, cb) {
-  // console.log("remove")
   const [one, two] = target_cb_type_oneTwo.get(target)?.get(cb)?.get(type);
   if (one) {
     target.removeEventListener(type, one, true);
