@@ -25,10 +25,6 @@ function runCb(e) {
 //     (same rule as for regular event listeners).
 const target_cb_type_oneTwo = new WeakMap();
 
-function getPostPropagationRegister(target, cb, type) {
-  return target_cb_type_oneTwo.get(target)?.get(cb)?.get(type);
-}
-
 //Cache the target/cb/type to [one two].
 //The cache is necessary to check for redundancy and remove the postPropagationCB
 function registerPropagationCallback(target, cb, type, one, two) {
@@ -68,10 +64,15 @@ function makeTwo(target) {
   };
 }
 
-//essentially a second bubble phase. The sequence of the targets are handled before the sequence when the callbacks were added
+//essentially a second bubble phase.
+// c             b       p
+//   c         b       p
+//     c     b       p
+//       b c       p
+// The sequence of the targets are handled before the sequence when the callbacks were added
 export function addPostPropagationCallback(target, type, cb) {
   //1. just exit, if the same combination target, type, cb is already added
-  if (getPostPropagationRegister(target, cb, type))
+  if (target_cb_type_oneTwo.get(target)?.get(cb)?.get(type))
     return;
 
   //2. make the stateful one two (three) closures
@@ -83,7 +84,7 @@ export function addPostPropagationCallback(target, type, cb) {
 }
 
 export function removePostPropagationCallback(target, type, cb) {
-  const [one, two] = getPostPropagationRegister(target, cb, type);
+  const [one, two] = target_cb_type_oneTwo.get(target)?.get(cb)?.get(type);
   if (one) {
     target.removeEventListener(type, one, true);
     target.removeEventListener(type, two, false);
