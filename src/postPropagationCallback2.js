@@ -9,7 +9,12 @@ function registerEventCbTarget(e, cb, target) {
 }
 
 function runCb(e) {
-  const {cb, target} = event_cbs.get(e).pop();
+  const cbs = event_cbs.get(e);
+  const firstTarget = cbs[0].target;
+  let i = 1;
+  while (cbs[i] && cbs[i].target === firstTarget)
+    i++;
+  const [{cb, target}] = cbs.splice(i-1, 1);
   cb.call(target, e);
 }
 
@@ -63,6 +68,7 @@ function makeTwo(target) {
   };
 }
 
+//essentially a second bubble phase. The sequence of the targets are handled before the sequence when the callbacks were added
 export function addPostPropagationCallback(target, type, cb) {
   //1. just exit, if the same combination target, type, cb is already added
   if (getPostPropagationRegister(target, cb, type))
