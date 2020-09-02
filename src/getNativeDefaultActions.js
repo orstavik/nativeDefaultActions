@@ -4,7 +4,7 @@
 //why different default actions are sorted out or not.
 //this pedagogy is actually hugely important..
 
-import {nativeDefaultActions} from "./ListOfNativeDefaultActions3.js";
+import {nativeDefaultActions} from "./ListOfNativeDefaultActions.js";
 
 //Event: click[isTrusted]
 //                                  div, shadowRoot1, web-comp, div, slot, shadow2, my-href, div, body, html, document, window3

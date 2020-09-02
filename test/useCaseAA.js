@@ -1,4 +1,4 @@
-import {DefaultActionMixin} from "../src/DefaultActionMixin2.js";
+import {DefaultActionMixin} from "../src/DefaultActionMixin.js";
 
 class AA extends DefaultActionMixin(HTMLElement) {
   constructor() {
