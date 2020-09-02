@@ -4,7 +4,7 @@ export const clickNavigateDefaultAction = {
     type: "click",
     isTrusted: true
   },
-  elementFilter: function navigate_filter(element) {
+  elementFilter: function navigate_filter(event, element) {
     return element.hasAttribute("href");
   },
   defaultAction: function navigate(event, element) {
@@ -21,7 +21,7 @@ export const auxclickNavigateDefaultAction = {
     isTrusted: true,
     button: 1
   },
-  elementFilter: function navigate_filter(element) {
+  elementFilter: function navigate_filter(event, element) {
     return element.hasAttribute("href");
   },
   defaultAction: function navigate_blank(event, element) {
@@ -38,7 +38,7 @@ export const enterToClickDefaultAction = {
     isTrusted: true,
     key: "Enter"
   },
-  elementFilter: function navigate_filter(element) {
+  elementFilter: function navigate_filter(event, element) {
     return element.hasAttribute("href") /* && el.matches(":focus-within")*/; //its redundant to check for focus, right?
   },
   defaultAction: function enter_click(event, element) {

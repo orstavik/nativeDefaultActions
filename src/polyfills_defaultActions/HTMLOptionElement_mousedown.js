@@ -29,7 +29,7 @@ export const mousedownOptionDefaultAction = {
     isTrusted: true,
     button: 0
   },
-  elementFilter: function navigate_filter(el) {
+  elementFilter: function navigate_filter(event, el) {
     return el.parentNode instanceof HTMLDetailsElement || (
       el.parentNode instanceof HTMLOptGroupElement &&
       el.parentNode.parentNode instanceof HTMLDetailsElement

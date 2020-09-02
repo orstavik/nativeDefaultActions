@@ -24,7 +24,7 @@ export const enterOnInputTextDefaultAction = {
     isTrusted: true,
     key: "Enter"
   },
-  elementFilter: function enterOnInputText_filter(el) {
+  elementFilter: function enterOnInputText_filter(event, el) {
     return el.type === "text" &&
       el.form && (
         el.form.querySelector(defaultButtonSelector) ||

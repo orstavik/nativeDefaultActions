@@ -8,7 +8,7 @@ export const dblclickDefaultAction = {
   },
   //targetOnly and composed ensures that the function is only run on the innermost target.
   //This ensures that the dblclick_filter is not needlessly run multiple times.
-  elementFilter: function dblclick_filter(event) {
+  elementFilter: function dblclick_filter(event, element) {
     if(previousClick === event)
       return false;
     if (previousClick && event.timeStamp - previousClick.timeStamp <= 300) {
