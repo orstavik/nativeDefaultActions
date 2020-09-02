@@ -3,7 +3,7 @@ export const clickButtonDefaultAction = {
   event: {
     type: "click"
   },
-  elementFilter: function buttonClick_filter(element) {
+  elementFilter: function buttonClick_filter(event, element) {
     return element.form && (element.type === "submit" || element.type === "reset");
   },
   defaultAction: function buttonClick_action(event, element) {
