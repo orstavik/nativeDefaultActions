@@ -40,6 +40,5 @@ export const mousedownOptionDefaultAction = {
     requestSelect.call(select, el);
   },
   repeat: "lowestWins",
-  preventable: true,
-  targetOnly: true
+  preventable: true
 };

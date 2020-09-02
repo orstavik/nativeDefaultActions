@@ -13,6 +13,5 @@ export const clickButtonDefaultAction = {
       element.form.reset();
   },
   repeat: "lowestWins",
-  preventable: true,
-  targetOnly: false
+  preventable: true
 };

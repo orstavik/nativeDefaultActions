@@ -41,8 +41,7 @@ export const enterOnInputTextDefaultAction = {
     el.form.requestSubmit();
   },
   repeat: "lowestWins",   //todo are there any edge cases here where this might not be true??  make tests for this
-  preventable: true,
-  targetOnly: true    //todo are there any edge cases here where this might not be true??  make tests for this
+  preventable: true
 };
 
 export const enterOnInputSubmitResetButtonDefaultAction = {
@@ -62,7 +61,6 @@ export const enterOnInputSubmitResetButtonDefaultAction = {
     el.dispatchEvent(click);
   },
   repeat: "lowestWins",
-  preventable: true,
-  targetOnly: true //todo how do we want to handle the targetOnly on the input elements?? it is more a question for select style inputs.
+  preventable: true
 };
 

@@ -12,6 +12,5 @@ export const mousedownFocusDefaultAction = {
     element.focus();
   },
   repeat: "once", //todo this should be repeat: document
-  preventable: true,  //todo verify an make test case
-  targetOnly: false
+  preventable: true  //todo verify an make test case
 };

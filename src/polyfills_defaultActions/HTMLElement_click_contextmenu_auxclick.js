@@ -24,8 +24,7 @@ export const clickDefaultAction = {
     dispatchMouseEvent(event, "click", element);
   },
   repeat: "lowestWins",
-  preventable: false,
-  targetOnly: true,
+  preventable: false
 };
 
 //todo the contextmenu for keydown.key = contextmenuKey doesn't need to be part of this default action.
@@ -44,8 +43,7 @@ export const contextmenuDefaultAction = {
     lastContextmenu = contextmenu;
   },
   repeat: "once",
-  preventable: false,
-  targetOnly: true,
+  preventable: false
 };
 
 export const auxclickDefaultAction2 = {
@@ -63,9 +61,7 @@ export const auxclickDefaultAction2 = {
     dispatchMouseEvent(event, "auxclick", element);
   },
   repeat: "lowestWins",
-  preventable: false,
-  targetOnly: true,
-
+  preventable: false
 };
 
 export const auxclickDefaultAction1 = {
@@ -79,9 +75,7 @@ export const auxclickDefaultAction1 = {
     dispatchMouseEvent(event, "auxclick", element);
   },
   repeat: "lowestWins",
-  preventable: false,
-  targetOnly: true,
-
+  preventable: false
 };
 
 export const auxclickDefaultAction3 = {
@@ -95,9 +89,7 @@ export const auxclickDefaultAction3 = {
     dispatchMouseEvent(event, "auxclick", element);
   },
   repeat: "lowestWins",
-  preventable: false,
-  targetOnly: true,
-
+  preventable: false
 };
 
 export const auxclickDefaultAction4 = {
@@ -111,9 +103,7 @@ export const auxclickDefaultAction4 = {
     dispatchMouseEvent(event, "auxclick", element);
   },
   repeat: "lowestWins",
-  preventable: false,
-  targetOnly: true,
-
+  preventable: false
 };
 
 export const showContextmenuDefaultAction = {
@@ -126,7 +116,5 @@ export const showContextmenuDefaultAction = {
     alert("poor excuse for a contextmenu: " + element.tagName);
   },
   repeat: "lowestWins",
-  preventable: true,
-  targetOnly: true,
-
+  preventable: true
 };

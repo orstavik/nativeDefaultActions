@@ -11,8 +11,7 @@ export const clickNavigateDefaultAction = {
     document.open(element.href);
   },
   repeat: "lowestWins",
-  preventable: true,
-  targetOnly: false
+  preventable: true
 };
 
 export const auxclickNavigateDefaultAction = {
@@ -28,10 +27,8 @@ export const auxclickNavigateDefaultAction = {
   defaultAction: function navigate_blank(event, element) {
     document.open(element.href, "_BLANK");
   },
-  repeat: "once",   //TODO BUG in browsers!!! should be TRUE. Report this bug in FF and add the number here
-  preventable: true,
-  targetOnly: false,
-
+  repeat: "once",   //TODO BUG in browsers!!! should be repeat: "lowestWins". Report this bug in FF and add the number here
+  preventable: true
 };
 
 export const enterToClickDefaultAction = {
@@ -52,7 +49,5 @@ export const enterToClickDefaultAction = {
     element.dispatchEvent(click);
   },
   repeat: "lowestWins",
-  preventable: true,
-  targetOnly: false,
-
+  preventable: true
 };

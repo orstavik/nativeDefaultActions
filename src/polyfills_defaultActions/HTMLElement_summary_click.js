@@ -10,6 +10,5 @@ export const clickSummaryDefaultAction = {
     element.parentNode.open = !element.parentNode.open;
   },
   repeat: "lowestWins",
-  preventable: true,
-  targetOnly: false
+  preventable: true
 };

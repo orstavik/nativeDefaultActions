@@ -26,6 +26,5 @@ export const dblclickDefaultAction = {
     event.target.dispatchEvent(dblclick);
   },
   repeat: "once",
-  preventable: false,
-  targetOnly: true
+  preventable: false
 };

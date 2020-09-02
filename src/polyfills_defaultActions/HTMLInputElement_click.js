@@ -42,6 +42,5 @@ export const clickInputDefaultAction = {
     //  we could assess whether or not
   },
   repeat: "lowestWins",
-  preventable: true,
-  targetOnly: false //todo could be set to true, as the input is a cul-de-sac element.
+  preventable: true
 };
