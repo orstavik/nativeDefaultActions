@@ -7,7 +7,7 @@
 //     defaultActions: [
 //           event,
 //           element,
-//           elementFilter,
+//           stateFilter,
 //           defaultAction,
 //           preventable,
 //           lowestWins,
@@ -75,8 +75,8 @@ function filterDefaultActions(das, event, element, document, isTarget, previousR
   const targetOK = das.map(da => !(da.targetOnly && !isTarget));
   //4. match repeat
   const repeatOK = das.map(da => noRepeatConflict(da, previousResults, document));
-  //5. match das.elementFilter (either no elementFilter or elementFilter returns true for this element
-  const filterOK = das.map(da => !da.elementFilter || da.elementFilter(element));
+  //5. match das.stateFilter (either no stateFilter or stateFilter returns true for this element
+  const filterOK = das.map(da => !da.stateFilter || da.stateFilter(element));
   //6. prevented
   const preventedOK = das.map(da => !event.defaultPrevented || !da.preventable);
   //7. flag as active (if all other flags are active, the DA is active.)
@@ -108,7 +108,7 @@ function filterDefaultActions(das, event, element, document, isTarget, previousR
 //               |/|x|/|0|/|x|/|0/
 // ?elementMatch?|x|/|0|/|x|/|0/
 //               |/|x|/|0|/|x/
-//?elementFilter?|x|/|0|/|x/
+//?stateFilter?|x|/|0|/|x/
 //               |/|x|/|0/
 //     ?isTarget?|x|/|0/
 //               |/|x|/
@@ -201,7 +201,7 @@ export function getDefaultActions(e) {
 //   const das = nativeDefaultActions.filter(da => matchEventEvent(e, da.event));
 //   const res = flagTargets(composedPathContextIDs(e.composedPath()));
 //   for (let entry of res)
-//     entry.defaultActions = das.filter(da => matchElementElementFilter(entry.host, da.element, da.elementFilter)).map(da => Object.assign({uniqueID: da}, da));
+//     entry.defaultActions = das.filter(da => matchElementElementFilter(entry.host, da.element, da.stateFilter)).map(da => Object.assign({uniqueID: da}, da));
 //
 //   e.defaultPrevented && flagPreventedEntries(res);
 //   excludeLowestWinsLoosers(res);

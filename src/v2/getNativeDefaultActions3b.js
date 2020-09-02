@@ -74,8 +74,8 @@ function filterDefaultActions(das, event, element, document, isTarget, previousR
   const targetOK = das.map(da => !(da.targetOnly && !isTarget));
   //4. match repeat
   const repeatOK = das.map(da => noRepeatConflict(da, previousResults, document));
-  //5. match das.elementFilter (either no elementFilter or elementFilter returns true for this element
-  const filterOK = das.map(da => !da.elementFilter || da.elementFilter(element));
+  //5. match das.stateFilter (either no stateFilter or stateFilter returns true for this element
+  const filterOK = das.map(da => !da.stateFilter || da.stateFilter(element));
   //6. prevented
   const preventedOK = das.map(da => !event.defaultPrevented || !da.preventable);
   //7. flag as active (if all other flags are active, the DA is active.)

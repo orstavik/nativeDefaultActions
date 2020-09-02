@@ -3,7 +3,7 @@ export const clickButtonSubmitDefaultAction = {
   event: {
     type: "click"
   },
-  elementFilter: function buttonClick_filter(event, element) {
+  stateFilter: function buttonClick_filter(event, element) {
     return element.form && element.type === "submit";
   },
   defaultAction: function clickRequestSubmit(event, element) {
@@ -18,7 +18,7 @@ export const clickButtonResetDefaultAction = {
   event: {
     type: "click"
   },
-  elementFilter: function buttonClick_filter(event, element) {
+  stateFilter: function buttonClick_filter(event, element) {
     return element.form && element.type === "reset";
   },
   defaultAction: function clickRequestReset(event, element) {

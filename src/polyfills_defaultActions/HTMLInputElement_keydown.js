@@ -24,7 +24,7 @@ export const enterOnInputTextDefaultAction = {
     isTrusted: true,
     key: "Enter"
   },
-  elementFilter: function enterOnInputText_filter(event, el) {
+  stateFilter: function enterOnInputText_filter(event, el) {
     return el.type === "text" &&
       el.form && (
         el.form.querySelector(defaultButtonSelector) ||
@@ -51,7 +51,7 @@ export const enterOnInputSubmitResetButtonDefaultAction = {
     isTrusted: true,
     key: "Enter"
   },
-  elementFilter: function enterOnInputSubmitResetButton_filter(ev, el) {
+  stateFilter: function enterOnInputSubmitResetButton_filter(ev, el) {
     return el.type === "submit" || el.type === "button" || el.type === "reset";
   },
   defaultAction: function enterOnInputSubmitResetButton(event, el) {

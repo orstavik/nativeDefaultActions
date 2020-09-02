@@ -3,7 +3,7 @@ export const clickSummaryDefaultAction = {
   event: {
     type: "click"
   },
-  elementFilter: function summaryClick_filter(event, el) {
+  stateFilter: function summaryClick_filter(event, el) {
     return el.matches("summary:first-of-type") && el.parentNode instanceof HTMLDetailsElement;
   },
   defaultAction: function summaryTogglesDetails(event, element) {

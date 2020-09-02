@@ -5,7 +5,7 @@ export const mousedownFocusDefaultAction = {
     isTrusted: true,
     button: 0
   },
-  elementFilter: function mousdownFocus_filter_focusable(event, el) {
+  stateFilter: function mousdownFocus_filter_focusable(event, el) {
     return !el.disabled && el.matches("a[href], area[href], input, select, textarea, button, iframe, [tabindex], [contentEditable=true]");
   },
   defaultAction: function MousedownFocuses(event, element) {

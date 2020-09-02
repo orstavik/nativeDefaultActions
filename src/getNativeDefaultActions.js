@@ -94,7 +94,7 @@ function getDefaultActionsEvent(e) {
       da.OKevent = matchEventEvent(da.eventInstance, da.event); //todo for speedup, we can simply skip checking the tests when we get a false reponse //that would mean that the active === OKfilter. But this is not good for pedagogy. So we keep the following structure.
       da.OKprevent = !da.defaultPrevented || !da.preventable;
       da.OKrepeat = noRepeatConflict(da, res.filter(da => da.active));
-      da.OKfilter = !da.elementFilter || da.elementFilter(da.eventInstance, da.elementInstance);
+      da.OKfilter = !da.stateFilter || da.stateFilter(da.eventInstance, da.elementInstance);
       da.active = da.OKevent && da.OKfilter && da.OKprevent && da.OKrepeat;
       res.push(da);
     }

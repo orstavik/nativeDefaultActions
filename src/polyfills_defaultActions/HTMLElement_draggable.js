@@ -19,7 +19,7 @@ export const draggableDefaultAction = {
     isTrusted: true,
     button: 0
   },
-  elementFilter: function filterDraggableTrue(event, element){
+  stateFilter: function filterDraggableTrue(event, element){
     if(!element.getAttribute("draggable", "true"))
       return false;
     const computedStyleDisplay = getComputedStyle(element).display;

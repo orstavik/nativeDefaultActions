@@ -12,7 +12,7 @@ export const clickInputDefaultAction = {
     type: "click"
     //isTrusted is irrelevant, todo verify and make test
   },
-  elementFilter: function (event, el) {
+  stateFilter: function (event, el) {
     return (
       el.type === "checkbox" ||
       el.type === "radio" ||
