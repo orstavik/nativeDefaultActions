@@ -5,14 +5,11 @@ export function lastPropagationTarget(event) {
   if (!event.composed) return composedPath[0];
   //non-bubbling and composed
   let last = composedPath[0];
-  let slots = 0;
-  for (let i = 1; i < composedPath.length - 1; i++) {
-    if (composedPath[i] instanceof ShadowRoot && slots === 0)
-      last = composedPath[++i];
-    else if(composedPath[i] instanceof ShadowRoot)
-      slots--;
-    else if(composedPath[i] instanceof HTMLSlotElement)
+  for (let i = 1, slots = 0; i < composedPath.length - 1; i++) {
+    if(composedPath[i] instanceof HTMLSlotElement)
       slots++;
+    else if(composedPath[i-1] instanceof ShadowRoot)
+      slots === 0 ? (last = composedPath[i]) : slots--;
   }
   return last;
 }
@@ -36,4 +33,44 @@ export function shadowElements(target, path) {
       shadows--;
   }
   return path;
+}
+
+//todo alert the user that this one will fail the wasChildNodeOfSlotAssignedOriginallyAndViceVersa
+export function contexts(path) {
+  const contexts = new Array(path.length);
+  let currentContext = contexts[contexts.length - 1] = path[path.length - 1];
+  for (let i = path.length - 2; i >= 0; i--) {
+    const node = path[i];
+    contexts[i] = node instanceof ShadowRoot ? node : currentContext;
+    //handle slotted paths... ahh... sweet, sweet <slot>s...
+    if (!(node instanceof HTMLSlotElement))
+      continue;
+    if (i === 0) //<slot> can be the innermost target. Then it is like a normal element in the path.
+      break;
+    //we assume no assigned nodes have been turned into a fallback node and vice versa since the event was first dispatched.
+    //This is a hole in the architecture of <slot> currently implemented in the specification.
+    if (path[i - 1].parentNode === node)  //it is not an assignedNode, it is a fallback child.
+      continue;  //<slot> can be a parentNode of a fallback node. Then it is also like a normal element in the path.
+    //The <slot> has an assigned node as its "child" in the event's propagation path.
+    //We must 'go back up' one context level, ie. to the context of the hostNode of the current "slotted" shadowDOM.
+    const hostIndex = path.indexOf(currentContext) + 1;
+    currentContext = contexts[hostIndex];
+  }
+  return contexts;
+}
+
+export function targets(path, contexts) {
+  targets[0] = true;
+  const targets = new Array(path.length);
+  for (let i = 1, slots = 0; i < path.length; i++) {
+    const element = path[i];
+    const context = contexts[i];
+    if (element instanceof HTMLSlotElement)
+      slots++;        //step into a slotted context
+    else if (element instanceof ShadowRoot)
+      slots--;        //step out of a slotted context
+    //host node and not inside a slotted context, then true, else false
+    targets[i] = path[i - 1] instanceof ShadowRoot && slots === 0;
+  }
+  return targets;
 }

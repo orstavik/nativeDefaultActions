@@ -17,7 +17,7 @@ let matchesOG;
 
 function spoofIsTrusted(e) {
   matchesOG = HTMLElement.prototype.matches;
-  HTMLElement.prototype.matches = function(str){
+  HTMLElement.prototype.matches = function (str) {
     str = str.replace(":focus", "");
     return matchesOG.call(this, str);
   }
@@ -42,6 +42,15 @@ function unspoofIsTrusted() {
   HTMLElement.prototype.matches = matchesOG;
 }
 
+function minimizeDefaultActions(actions) {
+  actions = actions.filter(da => da.active).map(da => ({
+    elementInstance: da.elementInstance,
+    index: da.index,
+    defaultAction: da.defaultAction
+  }));
+  return JSON.stringify(actions, replacer);
+}
+
 export const getDefaultActionsTestIsTrusted = {
   name: "getDefaultActions(event.isTrusted)",
   fun: function (res, usecase, event) {
@@ -53,16 +62,16 @@ export const getDefaultActionsTestIsTrusted = {
       const eIsTrusted = spoofIsTrusted(e);
       const actions = getDefaultActions(eIsTrusted);
       unspoofIsTrusted();
-      const str = JSON.stringify(actions, replacer);
+      const str = minimizeDefaultActions(actions)
       // console.log(str);
       res.push(str);
       e.preventDefault(); //we don't want these tests to run the default actions.
-    });
+    }, true);
     target.dispatchEvent(event);
   }
 };
 
-export const getDefaultActionsTest = {
+export const getDefaultActionsTest_NOT_TRUSTED = {
   name: "getDefaultActions(event)",
   fun: function (res, usecase, event) {
     const flatPath = usecase().flat(Infinity);
@@ -71,8 +80,8 @@ export const getDefaultActionsTest = {
 
     origin.addEventListener(event.type, function (e) {
       //to get the dblclick we need to spoof the isTrusted of the click event.
-      const actions = getDefaultActions(e);
-      const str = JSON.stringify(actions, replacer);
+      const actions = getDefaultActions(e).filter(da=> da.active);
+      const str = minimizeDefaultActions(actions);
       // console.log(str)
       res.push(str);
       e.preventDefault(); //we don't want these tests to run the default actions.

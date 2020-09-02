@@ -27,7 +27,7 @@ function makeDetailsBranch() {
 
 //details
 //  h1
-export function detailsH1() {
+export function detailsH1_x() {
   const {details, summary, a, input, h1, h2, h3} = makeDetailsBranch();
   const usecase = [h1, details];
   Object.freeze(usecase);
@@ -36,7 +36,7 @@ export function detailsH1() {
 
 //details
 //  summary
-export function detailsSummary() {
+export function detailsSummary_x() {
   const {details, summary, a, input, h1, h2, h3} = makeDetailsBranch();
   const usecase = [summary, details];
   Object.freeze(usecase);

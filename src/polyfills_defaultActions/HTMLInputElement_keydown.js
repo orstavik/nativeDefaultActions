@@ -47,11 +47,11 @@ export const enterOnInputTextDefaultAction = {
 export const enterOnInputSubmitResetButtonDefaultAction = {
   element: HTMLInputElement,
   event: {
-    type: "click",
+    type: "keydown",
     isTrusted: true,
     key: "Enter"
   },
-  elementFilter: function enterOnInputSubmitResetButton_filter(el) {
+  elementFilter: function enterOnInputSubmitResetButton_filter(ev, el) {
     return el.type === "submit" || el.type === "button" || el.type === "reset";
   },
   defaultAction: function enterOnInputSubmitResetButton(event, el) {

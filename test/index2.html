@@ -1,0 +1,258 @@
+<script>
+  function nextTick2(cb) {
+    let r;
+    const p = new Promise(function (resolve) {
+      r = resolve;
+    });
+    setTimeout(function () {
+      cb();
+      setTimeout(function () {
+        r();
+      })//todo i need setTimeout(..., 1) for this to work in ff?
+    }); //todo i need 1 for this to work in ff?
+    return p;
+  }
+
+  function setValue(obj, a, b, value) {
+    !obj[a] && (obj[a] = {});
+    !obj[a][b] && (obj[a][b] = {});
+    obj[a][b] = value;
+  }
+
+  function printResults(results) {
+    for (let [testName, testResults] of Object.entries(results)) {
+      const expected = testResults.expected;
+      delete testResults.expected;
+      const native = testResults.NATIVE;
+      for (let [systemName, result] of Object.entries(testResults)) {
+        if (systemName === "NATIVE" && result === expected)
+          testResults[systemName] = 1;
+        else if (systemName === "NATIVE")
+          testResults[systemName] = result;
+        else if (result === expected && result === native)
+          testResults[systemName] = null
+        else if (result === expected)
+          testResults[systemName] = 1
+        else if (result === native)
+          testResults[systemName] = undefined
+        else {
+          console.log("systemName: ", systemName)
+          console.log("expected: ", expected)
+          console.log("result: ", result)
+          testResults[systemName] = result + " != " + expected;
+        }
+      }
+    }
+    console.table(results);
+  }
+
+  async function runTest2(eventSystems, test, usecasesExpects) {
+    const {name: testName, fun} = test;
+    const results = {};
+    for (let [system, resetSystem] of eventSystems) {
+      system();
+      for (let i = 0; i < usecasesExpects.length; i++) {
+        let [usecase, event, expected] = usecasesExpects[i];
+
+        setValue(results, testName + ":" + usecase.name + ":" + event.name, "expected", JSON.stringify(expected));
+
+        let result = [];
+        fun(result, usecase, event());
+        await nextTick2(() => 1);  //just wait a t1ck, for any queued propagation to complete
+        setValue(results, testName + ":" + usecase.name + ":" + event.name, system.name, result.join(""));
+        await nextTick2(() => 1);  //just wait a t0ck, for any queued tasks of the propagation to complete
+      }
+      resetSystem();
+    }
+    return nextTick2(function () {
+      printResults(results);
+    });
+  }
+</script>
+
+<script type="module">
+
+  import {getDefaultActions} from "../src/getNativeDefaultActions4.js";
+
+  function DEFAULT_ACTIONS() {
+    window.getDefaultActions = getDefaultActions;
+  }
+
+  function RESET() {
+    window.getDefaultActions = undefined;
+  }
+
+  import {
+    getDefaultActionsTestIsTrusted,
+    getDefaultActionsTest_NOT_TRUSTED
+  } from "./testDefaultActionsLists.js";
+  import {
+    selectOption,
+    selectOptgroupOption,
+    selectDivOption,
+    selectOptgroupSpanOption
+  } from "./useCaseSelectNativeDefaultActions.js";
+  import {
+    formButtonReset,
+    formButtonSubmit,
+    formButtonButton,
+    formInputReset,
+    formInputSubmit,
+    formInputButton,
+    formInputText
+  } from "./useCaseFormNativeDefaultActions.js";
+  import {
+    aaCheckbox,
+    aaH1
+  } from "./useCaseAA.js";
+  import {
+    detailsH1,
+    detailsH2,
+    detailsSummaryTwo,
+    detailsSummary
+  } from "./useCaseDetailsSummary.js";
+  import {
+    detailsSummary_x,
+    detailsH1_x,
+    detailsSummaryAHref,
+    detailsSummaryAHrefH3,
+    detailsSummaryAHrefInputCheckbox,
+    detailsSummaryH2
+  } from "./useCaseTrippleConflicts.js";
+
+  (async function () {
+    function newMousedown() {
+      return new MouseEvent("mousedown", {button: 0, composed: true, bubbles: true, cancelable: true});
+    }
+
+    function newClick() {
+      return new MouseEvent("click", {button: 0, composed: true, bubbles: true, cancelable: true});
+    }
+
+    function newEnter() {
+      return new KeyboardEvent("keydown", {key: "Enter", composed: true, bubbles: true, cancelable: true});
+    }
+
+    await runTest2([
+      [DEFAULT_ACTIONS, RESET]
+    ], getDefaultActionsTestIsTrusted, [
+      [selectOption, newMousedown, [
+        {elementInstance: "OPTION", index: 0, defaultAction: "optionRequestSelect"},
+        {elementInstance: "SELECT", index: 1, defaultAction: "MousedownFocuses"}
+      ]],
+      [selectOptgroupOption, newMousedown, [
+        {elementInstance: "OPTION", index: 0, defaultAction: "optionRequestSelect"},
+        {elementInstance: "SELECT", index: 2, defaultAction: "MousedownFocuses"}
+      ]],
+      [selectDivOption, newMousedown, [
+        {elementInstance: "SELECT", index: 2, defaultAction: "MousedownFocuses"}
+      ]],
+      [selectOptgroupSpanOption, newMousedown, [
+        {elementInstance: "SELECT", index: 3, defaultAction: "MousedownFocuses"}
+      ]],
+      [formButtonReset, newClick, [
+        {elementInstance: "BUTTON", index: 0, defaultAction: "clickRequestReset"},
+        {elementInstance: "BUTTON", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [formButtonSubmit, newClick, [
+        {elementInstance: "BUTTON", index: 0, defaultAction: "clickRequestSubmit"},
+        {elementInstance: "BUTTON", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [formButtonButton, newClick, [
+        {elementInstance: "BUTTON", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [formInputReset, newClick, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "inputClick"},
+        {elementInstance: "INPUT", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [formInputSubmit, newClick, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "inputClick"},
+        {elementInstance: "INPUT", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [detailsH1, newClick, [
+        {elementInstance: "H1", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [detailsH2, newClick, [
+        {elementInstance: "H2", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [detailsSummaryTwo, newClick, [
+        {elementInstance: "SUMMARY", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [detailsSummary, newClick, [
+        {elementInstance: "SUMMARY", index: 0, defaultAction: "summaryTogglesDetails"},
+        {elementInstance: "SUMMARY", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [detailsH1_x, newClick, [
+        {elementInstance: "H1", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [detailsSummary_x, newClick, [
+        {elementInstance: "SUMMARY", index: 0, defaultAction: "summaryTogglesDetails"},
+        {elementInstance: "SUMMARY", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [detailsSummaryH2, newClick, [
+        {elementInstance: "H2", index: 0, defaultAction: "dblclick_dispatch"},
+        {elementInstance: "SUMMARY", index: 1, defaultAction: "summaryTogglesDetails"}
+      ]],
+      [detailsSummaryAHref, newClick, [
+        {elementInstance: "A", index: 0, defaultAction: "navigate"},
+        {elementInstance: "A", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [detailsSummaryAHrefH3, newClick, [
+        {elementInstance: "H3", index: 0, defaultAction: "dblclick_dispatch"},
+        {elementInstance: "A", index: 1, defaultAction: "navigate"}
+      ]],
+      [detailsSummaryAHrefInputCheckbox, newClick, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "inputClick"},
+        {elementInstance: "INPUT", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [aaH1, newClick, [
+        {elementInstance: "H1", index: 0, defaultAction: "dblclick_dispatch"},
+        {elementInstance: "A-A", index: 3, defaultAction: "navigate"}
+      ]],
+      [aaCheckbox, newClick, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "inputClick"},
+        {elementInstance: "INPUT", index: 0, defaultAction: "dblclick_dispatch"}
+      ]],
+      [formButtonReset, newEnter, [
+        {elementInstance: "BUTTON", index: 0, defaultAction: "buttonEnter"}
+      ]],
+      [formButtonSubmit, newEnter, [
+        {elementInstance: "BUTTON", index: 0, defaultAction: "buttonEnter"}
+      ]],
+      [formButtonButton, newEnter, [
+        {elementInstance: "BUTTON", index: 0, defaultAction: "buttonEnter"}
+      ]],
+      [formInputReset, newEnter, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "enterOnInputSubmitResetButton"}
+      ]],
+      [formInputSubmit, newEnter, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "enterOnInputSubmitResetButton"}
+      ]],
+      [formInputButton, newEnter, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "enterOnInputSubmitResetButton"}
+      ]],
+      [formInputText, newEnter, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "enterOnInputText"}
+      ]],
+    ]);
+
+    await runTest2([[DEFAULT_ACTIONS, RESET]], getDefaultActionsTest_NOT_TRUSTED, [
+      [selectOption, newMousedown, []],
+      [selectOptgroupOption, newMousedown, []],
+      [selectDivOption, newMousedown, []],
+      [selectOptgroupSpanOption, newMousedown, []],
+      [formButtonReset, newClick, [
+        {elementInstance: "BUTTON", index: 0, defaultAction: "clickRequestReset"}
+      ]],
+      [formButtonSubmit, newClick, [
+        {elementInstance: "BUTTON", index: 0, defaultAction: "clickRequestSubmit"}
+      ]],
+      [formInputReset, newClick, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "inputClick"}
+      ]],
+      [formInputSubmit, newClick, [
+        {elementInstance: "INPUT", index: 0, defaultAction: "inputClick"}
+      ]],
+    ]);
+  })();
+</script>

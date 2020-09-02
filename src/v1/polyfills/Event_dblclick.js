@@ -10,7 +10,7 @@ let lastClickTimeStamp;
  * @param notInUse
  * @param clickEvent should only react to "isTrusted==true" click events
  */
-export function event_dblclick(clickTarget, notInUse, clickEvent) {
+export function event_dblclick(clickEvent, clickTarget) {
   console.log("trying")
   if (!lastClickTimeStamp || (clickEvent.timeStamp - lastClickTimeStamp) > 300)
     return lastClickTimeStamp = clickEvent.timeStamp;

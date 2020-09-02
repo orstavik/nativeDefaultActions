@@ -1,20 +1,5 @@
-export const stopPropagationOG = Event.stopPropagation;
-export const stopImmediatePropagationOG = Event.stopImmediatePropagation;
-
-Object.defineProperty(Event.prototype, {
-  stopPropagation: {
-    value: function () {
-      console.warn(".stopPropagation() should be deprecated.");
-    }
-  },
-  stopImmediatePropagation: {
-    value: function () {
-      console.warn(".stopImmediatePropagation() should be deprecated.");
-    }
-  }
-});
-
 import {lastPropagationTarget} from "./pureFunctions.js";
+import {} from "./EventListenerOptionsFirstLast.js";
 
 //register of the postPropagation cbs for this particular event.
 const event_cbs = new WeakMap();

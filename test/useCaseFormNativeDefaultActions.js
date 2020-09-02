@@ -27,15 +27,6 @@ export function formButtonReset() {
 }
 
 //form
-//  input[type=reset]
-export function formInputReset() {
-  const {form, input} = makeFormBranch("reset");
-  const usecase = [input, form];
-  Object.freeze(usecase);
-  return usecase;
-}
-
-//form
 //  button[type=submit]
 export function formButtonSubmit() {
   const {form, button} = makeFormBranch("submit");
@@ -45,9 +36,36 @@ export function formButtonSubmit() {
 }
 
 //form
+//  button[type=button]
+export function formButtonButton() {
+  const {form, button} = makeFormBranch("button");
+  const usecase = [button, form];
+  Object.freeze(usecase);
+  return usecase;
+}
+
+//form
+//  input[type=reset]
+export function formInputReset() {
+  const {form, input} = makeFormBranch("reset");
+  const usecase = [input, form];
+  Object.freeze(usecase);
+  return usecase;
+}
+
+//form
 //  input[type=submit]
 export function formInputSubmit() {
   const {form, input} = makeFormBranch("submit");
+  const usecase = [input, form];
+  Object.freeze(usecase);
+  return usecase;
+}
+
+//form
+//  input[type=button]
+export function formInputButton() {
+  const {form, input} = makeFormBranch("button");
   const usecase = [input, form];
   Object.freeze(usecase);
   return usecase;

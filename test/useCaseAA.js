@@ -1,32 +1,34 @@
-class AA extends HTMLElement {
+import {DefaultActionMixin} from "../src/DefaultActionMixin2.js";
+
+class AA extends DefaultActionMixin(HTMLElement) {
   constructor() {
     super();
     this.attachShadow({mode: "open"});
     this.shadowRoot.innerHTML = "<slot></slot>";
-    this.addEventListener("click", this.onClick.bind(this), {unstoppable: true});
-    // this.addEventListener("click", function (e) { // the browser checks to see if the href attribute is set at the beginning of the event propagation.
-    //   if (e.composedPath().indexOf(this) >= 0)    // In Chrome, if remember correctly. This is very hard to accomplish using event listeners.
-    //     this.onClick(e);                          // To accomplish this, we would need a first, capture event listener on the window,
-    // }.bind(this), {capture: true, first: true});  // that checked all click events to see if they contained this a element.
   }
 
-  onClick(e) {
-    // if (!e.isTrusted)   //isTrusted is ignored for testing purposes
-    //   return;
-    if (!this.hasAttribute("href"))
-      return;
-    if (window["addDefault"])
-      addDefault(e, this.requestNavigate.bind(this), this, {additive: false, irreversible: false, native: "kinda"});
-  }
-
-  requestNavigate(targetWindow) {
-    const href = new URL(this.getAttribute("href"));
-    document.open(href, targetWindow);
+  static get defaultActions() {
+    return [
+      {
+        element: AA,
+        event: {
+          type: "click",
+          isTrusted: true
+        },
+        filterElement: function (event, el) {
+          return el.hasAttribute("href");
+        },
+        defaultAction: function navigate(event, el) {
+          document.open(el.href);
+        },
+        preventable: true,
+        repeat: "lowestWins"
+      }
+    ]
   }
 }
 
 customElements.define("a-a", AA);
-
 
 //useCase aaH1
 // Flattened DOM                   | DOM context

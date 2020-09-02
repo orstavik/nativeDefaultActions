@@ -7,15 +7,19 @@
  */
 
 import {event_dblclick} from "./polyfills/Event_dblclick.js";
-import{requestNavigation} from "./polyfills/HTMLAnchorElement_requestNavigation.js";
-import{requestCheckboxToggle} from "./polyfills/HTMLInputElement_requestCheckboxToggle.js";
-import{requestSelect} from "./polyfills/HTMLSelectElement_requestSelect.js";
+import {requestNavigation} from "./polyfills/HTMLAnchorElement_requestNavigation.js";
+import {requestCheckboxToggle, implicable, implicableSelector} from "./polyfills/HTMLInputElement_requestCheckboxToggle.js";
+import {requestSelect} from "./polyfills/HTMLSelectElement_requestSelect.js";
 import {toggle} from "./polyfills/HTMLDetailsElement_toggle.js";
 import {defaultButton} from "./polyfills/HTMLFormElement_defaultButton.js";
 
 const focusableQuerySelector = "a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]";//option is not considered focusable, bad legacy design.
 
 const tabbableQuerySelector = "a[href]:not([tabindex='-1']), area[href]:not([tabindex='-1']), input:not([disabled]):not([tabindex='-1']), select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']), iframe:not([tabindex='-1']), [tabindex]:not([tabindex='-1']), [contentEditable=true]:not([tabindex='-1'])";
+
+function newAsyncTrustedClick() {
+  return new MouseEvent("click", {composed: true, bubbles: true, isTrusted: true, async: true});
+}
 
 //todo sort this in a event type dictionary??
 export const listOfDefaultActions = [{
@@ -66,25 +70,61 @@ export const listOfDefaultActions = [{
   eventQuery: "click",                    //isTrusted is not necessary for submit
   elementQuery: "form button[type=submit], form input[type=submit]",
   method: (form, button) => HTMLFormElement.prototype.requestSubmit.bind(form, button)
-},
+}, {
   //enter-to-click default actions.
   //The .isTrusted property is transferred from the keydown to the click event. This is not possible in JS.
   //todo enter on select, summary?? it must be a focusable element??
   //todo could it be simplified to something like ":focus"?? that it just turns anything that has `:focus` to be clicked?? That would be good...
   //todo and then there would be a special case for ":focus" for other input elements such as text... No.. I think this is much more semantic than that.. More complex.
-{
   eventQuery: "keydown?key=Enter&isTrusted=true",
-  elementQuery: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus",
-  method: (form, button) => HTMLElement.prototype.click.bind(button, {isTrusted: true})
+  elementQuery:
+    "form input[type=reset]:focus:not(:disabled)," +
+    "form button[type=reset]:focus:not(:disabled)," +
+    "form button[type=submit]:focus:not(:disabled)," +
+    "form input[type=submit]:focus:not(:disabled)",
+  //because of the reverse logic for matches, going bottom up, the form *must* here be the .form owner of the input/button element.
+  method: (form, button) => EventTarget.prototype.dispatchEvent.bind(button, newAsyncTrustedClick())
 }, {
   eventQuery: "keydown?key=Enter&isTrusted=true",
   elementQuery: "a[href]:focus",
-  method: a => HTMLElement.prototype.click.bind(a, {isTrusted: true})
+  method: function EnterToClick(a) {
+    return EventTarget.prototype.dispatchEvent.bind(a, newAsyncTrustedClick());
+  }
 }, {
   eventQuery: "keydown?key=Enter&isTrusted=true",
-  elementQuery: "form:state(defaultButton) input[type=text]:focus",
-  method: (form, inputText) => HTMLElement.prototype.click.bind(defaultButton(form), {isTrusted: true})
+  //css is lacking support for HelicopterParentChild queries. How do we know that the form owner of the input[text] is the form??
+  elementQuery: "form:state(defaultButton) input[type=text]:focus",   //    input[text] => input[submit], input[img], button[submit]
+  method: (form, inputText) => EventTarget.prototype.dispatchEvent.bind(defaultButton(form), newAsyncTrustedClick())
+}, {
+  eventQuery: "keydown?key=Enter&isTrusted=true",
+  //css is lacking support for HelicopterParentChild queries. How do we know that the form owner of the input[text] is the form??
+  elementQuery: "form:state(only-one-input-text) :not(form) input[type=text]:focus",
+  method: (form, inputText) => HTMLFormElement.prototype.requestSubmit.bind(form)
+}, {
+  eventQuery: "keydown?key=Enter&isTrusted=true",
+  elementQuery: implicableSelector,
+  method: checkImplicitSubmission
 }];
+
+function checkImplicitSubmission(input) {
+  const impliedTarget = implicable(input);
+  if(!impliedTarget)
+    return;
+  if()
+  return HTMLInputElement_maybeClickDefaultOrRequestDefault.bind(inputText);
+}
+
+function HTMLInputElement_maybeClickDefaultOrRequestDefault(input) {
+  const form = input.form;
+  if (!form)
+    return;
+  let button = defaultButton(form);
+  if (button)
+    return button.dispatchEvent(newAsyncTrustedClick());
+  if (isSingleTextForm(form))
+    nextTick(HTMLFormElement.prototype.requestSubmit.bind(form));
+}
+
 //tab?? does this produce a default action?? I think yes
 //other characters for input and textarea..
 

@@ -1,4 +1,4 @@
-import {lastPropagationTarget, shadowElements} from "./pureFunctions.js";
+import {lastPropagationTarget, shadowElements} from "../pureFunctions.js";
 import {getNativeDefaultActions, markExcludedActions} from "./getNativeDefaultActions.js";
 
 const defaultActions = new WeakMap();

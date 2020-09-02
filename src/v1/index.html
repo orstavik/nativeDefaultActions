@@ -72,12 +72,12 @@
 
 <script type="module">
 
-  import {getDefaultActions} from "../src/getNativeDefaultActions.js";
+  import {getDefaultActions} from "./getNativeDefaultActions.js";
   import {
     addDefault,
     getDefaultActions as customGetDefaultAction,
     narrowPreventDefault
-  } from "../src/getCustomDefaultActions.js";
+  } from "./getCustomDefaultActions.js";
 
   function NATIVE_DEFAULT_ACTION() {
     window.getDefaultActions = getDefaultActions;
@@ -99,31 +99,31 @@
 
   import {
     getDefaultActionsTestIsTrusted,
-    getDefaultActionsTest
-  } from "./testDefaultActionsLists.js";
+    getDefaultActionsTest_NOT_TRUSTED
+  } from "../../test/testDefaultActionsLists.js";
   import {
     selectOption,
     selectOptgroupOption,
     selectDivOption,
     selectOptgroupSpanOption
-  } from "./useCaseSelectNativeDefaultActions.js";
+  } from "../../test/useCaseSelectNativeDefaultActions.js";
   import {
     formButtonReset,
     formInputReset,
     formButtonSubmit,
     formInputSubmit,
     formInputText
-  } from "./useCaseFormNativeDefaultActions.js";
+  } from "../../test/useCaseFormNativeDefaultActions.js";
   import {
     aaCheckbox,
     aaH1
-  } from "./useCaseAA.js";
+  } from "../../test/useCaseAA.js";
   import {
     detailsH1,
     detailsH2,
     detailsSummaryTwo,
     detailsSummary
-  } from "./useCaseDetailsSummary.js";
+  } from "../../test/useCaseDetailsSummary.js";
   import {
     detailsSummary as detailsSummary_3,
     detailsH1 as detailsH1_3,
@@ -131,7 +131,7 @@
     detailsSummaryAHrefH3,
     detailsSummaryAHrefInputCheckbox,
     detailsSummaryH2
-  } from "./useCaseTrippleConflicts.js";
+  } from "../../test/useCaseTrippleConflicts.js";
 
   (async function () {
     function newMousedown() {
@@ -574,7 +574,7 @@
       }], newEnter],
     ]);
 
-    await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTest, [
+    await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTest_NOT_TRUSTED, [
       [selectOption, [], newMousedown],
       [selectOptgroupOption, [], newMousedown],
       [selectDivOption, [], newMousedown],

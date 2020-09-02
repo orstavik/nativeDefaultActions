@@ -1,0 +1,628 @@
+<script>
+  function nextTick2(cb) {
+    let r;
+    const p = new Promise(function (resolve) {
+      r = resolve;
+    });
+    setTimeout(function () {
+      cb();
+      setTimeout(function () {
+        r();
+      })//todo i need setTimeout(..., 1) for this to work in ff?
+    }); //todo i need 1 for this to work in ff?
+    return p;
+  }
+
+  function setValue(obj, a, b, value) {
+    !obj[a] && (obj[a] = {});
+    !obj[a][b] && (obj[a][b] = {});
+    obj[a][b] = value;
+  }
+
+  function printResults(results) {
+    for (let [testName, testResults] of Object.entries(results)) {
+      const expected = testResults.expected;
+      delete testResults.expected;
+      const native = testResults.NATIVE;
+      for (let [systemName, result] of Object.entries(testResults)) {
+        if (systemName === "NATIVE" && result === expected)
+          testResults[systemName] = 1;
+        else if (systemName === "NATIVE")
+          testResults[systemName] = result;
+        else if (result === expected && result === native)
+          testResults[systemName] = null
+        else if (result === expected)
+          testResults[systemName] = 1
+        else if (result === native)
+          testResults[systemName] = undefined
+        else {
+          console.log("systemName: ", systemName)
+          console.log("expected:", expected)
+          console.log("result:  ", result)
+          testResults[systemName] = result + " != " + expected;
+        }
+      }
+    }
+    console.table(results);
+  }
+
+  async function runTest2(eventSystems, test, usecasesExpects) {
+    const {name: testName, fun} = test;
+    const results = {};
+    for (let [system, resetSystem] of eventSystems) {
+      system();
+      for (let i = 0; i < usecasesExpects.length; i++) {
+        let [usecase, event, expected] = usecasesExpects[i];
+
+        setValue(results, testName + ":" + usecase.name + ":" + event.name, "expected", JSON.stringify(expected));
+
+        let result = [];
+        fun(result, usecase, event());
+        await nextTick2(() => 1);  //just wait a t1ck, for any queued propagation to complete
+        setValue(results, testName + ":" + usecase.name + ":" + event.name, system.name, result.join(""));
+        await nextTick2(() => 1);  //just wait a t0ck, for any queued tasks of the propagation to complete
+      }
+      resetSystem();
+    }
+    return nextTick2(function () {
+      printResults(results);
+    });
+  }
+</script>
+
+<script type="module">
+
+  import {getDefaultActions} from "./getNativeDefaultActions2.js";
+  // import {
+  //   addDefault,
+  //   getDefaultActions as customGetDefaultAction,
+  //   narrowPreventDefault
+  // } from "../src/getCustomDefaultActions.js";
+
+  function NATIVE_DEFAULT_ACTION() {
+    window.getDefaultActions = getDefaultActions;
+  }
+
+  function RESET() {
+    window.getDefaultActions = undefined;
+  }
+
+  // function CUSTOM_DEFAULT_ACTION() {
+  //   window.getDefaultActions = customGetDefaultAction;
+  //   window.addDefault = addDefault;
+  // }
+  //
+  // function RESET_CUSTOM() {
+  //   window.getDefaultActions = undefined;
+  //   window.addDefault = undefined;
+  // }
+
+  import {
+    getDefaultActionsTestIsTrusted,
+    getDefaultActionsTest_NOT_TRUSTED
+  } from "../../test/testDefaultActionsLists.js";
+  import {
+    selectOption,
+    selectOptgroupOption,
+    selectDivOption,
+    selectOptgroupSpanOption
+  } from "../../test/useCaseSelectNativeDefaultActions.js";
+  import {
+    formButtonReset,
+    formInputReset,
+    formButtonSubmit,
+    formInputSubmit,
+    formInputText
+  } from "../../test/useCaseFormNativeDefaultActions.js";
+  import {
+    aaCheckbox,
+    aaH1
+  } from "../../test/useCaseAA.js";
+  import {
+    detailsH1,
+    detailsH2,
+    detailsSummaryTwo,
+    detailsSummary
+  } from "../../test/useCaseDetailsSummary.js";
+  import {
+    detailsSummary as detailsSummary_3,
+    detailsH1 as detailsH1_3,
+    detailsSummaryAHref,
+    detailsSummaryAHrefH3,
+    detailsSummaryAHrefInputCheckbox,
+    detailsSummaryH2
+  } from "../../test/useCaseTrippleConflicts.js";
+
+  (async function () {
+    function newMousedown() {
+      return new MouseEvent("mousedown", {button: 0, composed: true, bubbles: true, cancelable: true});
+    }
+
+    function newClick() {
+      return new MouseEvent("click", {button: 0, composed: true, bubbles: true, cancelable: true});
+    }
+
+    function newEnter() {
+      return new KeyboardEvent("keydown", {key: "Enter", composed: true, bubbles: true, cancelable: true});
+    }
+
+    await runTest2([
+      [NATIVE_DEFAULT_ACTION, RESET],
+      // [CUSTOM_DEFAULT_ACTION, RESET_CUSTOM]
+    ], getDefaultActionsTestIsTrusted, [
+      [selectOption, newMousedown, [{
+        index: 0,
+        host: "OPTION",
+        task: "optionRequestsSelect",
+        preventable: true,
+        lowestWins: true,
+        targetOnly: true,
+        native: true,
+        event: "mousedown",
+        element: HTMLOptionElement.prototype.constructor.name
+      }, {
+        index: 1,
+        host: "SELECT",
+        task: "MousedownFocuses",
+        preventable: true,
+        lowestWins: false,
+        targetOnly: false,
+        native: true,
+        event: "mousedown",
+        element: HTMLElement.prototype.constructor.name
+      }]],
+      //   [selectOptgroupOption, [{
+      //     index: 0,
+      //     host: "SELECT",
+      //     task: "bound requestSelect",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "mousedown",
+      //     element: "select > option, select > optgroup > option"
+      //   }, {
+      //     index: 2,
+      //     host: "SELECT",
+      //     task: "bound focus",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: true,           targetOnly: true,
+      //     event: "mousedown",
+      //     element: "a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"
+      //   }], newMousedown],
+      //   [selectDivOption, [{
+      //     index: 2,
+      //     host: "SELECT",
+      //     task: "bound focus",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: true,           targetOnly: true,
+      //     event: "mousedown",
+      //     element: "a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"
+      //   }], newMousedown],
+      //   [selectOptgroupSpanOption, [{
+      //     index: 3,
+      //     host: "SELECT",
+      //     task: "bound focus",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: true,           targetOnly: true,
+      //     event: "mousedown",
+      //     element: "a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex], [contentEditable=true]"
+      //   }], newMousedown],
+      //   [formButtonReset, [{
+      //     index: 0,
+      //     host: "BUTTON",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound reset",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "form button[type=reset], form input[type=reset]"
+      //   }], newClick],
+      //   [formInputReset, [{
+      //     index: 0,
+      //     host: "INPUT",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound reset",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "form button[type=reset], form input[type=reset]"
+      //   }], newClick],
+      //   [formButtonSubmit, [{
+      //     index: 0,
+      //     host: "BUTTON",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound requestSubmit",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "form button[type=submit], form input[type=submit]"
+      //   }], newClick],
+      //   [formInputSubmit, [{
+      //     index: 0,
+      //     host: "INPUT",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound requestSubmit",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "form button[type=submit], form input[type=submit]"
+      //   }], newClick],
+      //   [detailsH1, [{
+      //     index: 0,
+      //     host: "H1",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }], newClick],
+      //   [detailsH2, [{
+      //     index: 0,
+      //     host: "H2",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }], newClick],
+      //   [detailsSummaryTwo, [{
+      //     index: 0,
+      //     host: "SUMMARY",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }], newClick],
+      //   [detailsSummary, [{
+      //     index: 0,
+      //     host: "SUMMARY",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 0,
+      //     host: "DETAILS",
+      //     task: "bound toggle",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "details > summary:first-of-type"
+      //   }], newClick],
+      //   [detailsH1_3, [{
+      //     index: 0,
+      //     host: "H1",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }], newClick],
+      //   [detailsSummary_3, [{
+      //     index: 0,
+      //     host: "SUMMARY",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 0,
+      //     host: "DETAILS",
+      //     task: "bound toggle",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "details > summary:first-of-type"
+      //   }], newClick],
+      //   [detailsSummaryH2, [{
+      //     index: 0,
+      //     host: "H2",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 1,
+      //     host: "DETAILS",
+      //     task: "bound toggle",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "details > summary:first-of-type"
+      //   }], newClick],
+      //   [detailsSummaryAHref, [{
+      //     index: 0,
+      //     host: "A",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 0,
+      //     host: "A",
+      //     task: "bound requestNavigation",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "a[href]"
+      //   }, {
+      //     index: 1,
+      //     host: "DETAILS",
+      //     task: "bound toggle",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "details > summary:first-of-type",
+      //     excluded: true
+      //   }], newClick],
+      //   [detailsSummaryAHrefH3, [{
+      //     index: 0,
+      //     host: "H3",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 1,
+      //     host: "A",
+      //     task: "bound requestNavigation",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "a[href]"
+      //   }, {
+      //     index: 2,
+      //     host: "DETAILS",
+      //     task: "bound toggle",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "details > summary:first-of-type",
+      //     excluded: true
+      //   }], newClick],
+      //   [detailsSummaryAHrefInputCheckbox, [{
+      //     index: 0,
+      //     host: "INPUT",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 0,
+      //     host: "INPUT",
+      //     task: "bound requestCheckboxToggle",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "input[type=checkbox]"
+      //   }, {
+      //     index: 1,
+      //     host: "A",
+      //     task: "bound requestNavigation",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "a[href]",
+      //     excluded: true
+      //   }, {
+      //     index: 2,
+      //     host: "DETAILS",
+      //     task: "bound toggle",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "details > summary:first-of-type",
+      //     excluded: true
+      //   }], newClick],
+      //   [aaH1, [{
+      //     index: 0,
+      //     host: "H1",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     native: "kinda",
+      //     task: "bound requestNavigate",
+      //     host: "A-A",
+      //     index: 3
+      //   }], newClick],
+      //   [aaCheckbox, [{
+      //     index: 0,
+      //     host: "INPUT",
+      //     task: "bound event_dblclick",
+      //     native: true,
+      //     lowestWins: false,
+      //     preventable: false,           targetOnly: true,
+      //     event: "click",
+      //     element: "*"
+      //   }, {
+      //     index: 0,
+      //     host: "INPUT",
+      //     task: "bound requestCheckboxToggle",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "input[type=checkbox]"
+      //   }, {
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     native: "kinda",              //todo remove all kinda references? i think yes.
+      //     task: "bound requestNavigate",
+      //     host: "A-A",
+      //     index: 3,
+      //     "excluded": true
+      //   }], newClick],
+      //   [formButtonReset, [{
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound click",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "keydown",
+      //     element: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus"
+      //   }], newEnter],
+      //   [formInputReset, [{
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound click",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "keydown",
+      //     element: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus"
+      //   }], newEnter],
+      //   [formButtonSubmit, [{
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound click",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "keydown",
+      //     element: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus"
+      //   }], newEnter],
+      //   [formInputSubmit, [{
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound click",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "keydown",
+      //     element: "form input[type=reset]:focus, form button[type=reset]:focus, form button[type=submit]:focus, form input[type=submit]:focus"
+      //   }], newEnter],
+      //   [formInputText, [{
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound click",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "keydown",
+      //     element: "form:state(defaultButton) input[type=text]:focus"
+      //   }], newEnter],
+      // ]);
+      //
+      // await runTest2([[NATIVE_DEFAULT_ACTION, RESET]], getDefaultActionsTest, [
+      //   [selectOption, [], newMousedown],
+      //   [selectOptgroupOption, [], newMousedown],
+      //   [selectDivOption, [], newMousedown],
+      //   [selectOptgroupSpanOption, [], newMousedown],
+      //   [formButtonReset, [{
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound reset",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "form button[type=reset], form input[type=reset]"
+      //   }], newClick],
+      //   [formInputReset, [{
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound reset",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "form button[type=reset], form input[type=reset]"
+      //   }], newClick],
+      //   [formButtonSubmit, [{
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound requestSubmit",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "form button[type=submit], form input[type=submit]"
+      //   }], newClick],
+      //   [formInputSubmit, [{
+      //     index: 0,
+      //     host: "FORM",
+      //     task: "bound requestSubmit",
+      //     native: true,
+      //     lowestWins: true,
+      //     preventable: true,           targetOnly: true,
+      //     event: "click",
+      //     element: "form button[type=submit], form input[type=submit]"
+      //   }], newClick]
+    ]);
+
+    // await runTest2([], getDefaultActionsTestIsTrusted, []);
+  })();
+</script>

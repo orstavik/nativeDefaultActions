@@ -1,7 +1,7 @@
 export const mousedownFocusDefaultAction = {
   element: HTMLElement,
   event: {
-    type: "click",
+    type: "mousedown",
     isTrusted: true,
     button: 0
   },

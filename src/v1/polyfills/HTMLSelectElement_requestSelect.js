@@ -3,7 +3,7 @@ export function requestSelect(option) {
   function optionSelectEndMouseup() {
     //option.color = orange?? //there is no way to trigger this behavior from js... It is completely hidden in the browser.
     const input = new InputEvent("input", {bubbles: true, composed: true});
-    this.dispatchEvent(input);
+    this.dispatchEvent(input);//todo this should be the select, no?                                                             ゜
     const change = new InputEvent("change", {bubbles: true, composed: false});
     this.dispatchEvent(change);
   }
