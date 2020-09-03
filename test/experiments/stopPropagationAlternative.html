@@ -1,0 +1,51 @@
+<meta charset="UTF-8">
+
+<h6>menu
+  <span>menu content</span>
+</h6>
+
+<script> //module OpenCloseMenu
+const menu = document.querySelector("h6");
+const menuContent = menu.children[0];
+menuContent.style.display = "none";
+
+menu.addEventListener("click", function (e) {
+  const state = menuContent.style.display;
+  menuContent.style.display = state === "inline" ? "none" : "inline";
+  e.menuIsStopped = true;
+  //this module uses stopPropagation so the click on window doesn't also close the menu when click to open it.
+});
+window.addEventListener("click", function (e) {
+  if (e.menuIsStopped)
+    return;
+  menuContent.style.display = "none";
+});
+</script>
+
+<style>
+  div:not([open]) {display: none;}
+</style>
+
+<div open> ▶ Chapter 1
+  <div> ▶ Chapter 1.1
+    <div> ▶ Chapter 1.1.1
+    </div>
+  </div>
+</div>
+
+<script> //module OpenCloseChapters
+function openCloseChapter(e) {
+  if (e.openCloseChapterIsStopped)
+    return;
+  const div = this.children[0] || this;
+  const isOpen = div.hasAttribute("open");
+  isOpen ? div.removeAttribute("open") : div.setAttribute("open", "");
+  e.openCloseChapterIsStopped = true;
+  //we stop bubbling so that when you open chapter 1.1.1,
+  //you don't at the same time CLOSE chapter 1.1 and chapter 1.
+}
+
+const chapters = document.querySelectorAll("div");
+for (let chapter of chapters)
+  chapter.addEventListener("click", openCloseChapter);
+</script>
