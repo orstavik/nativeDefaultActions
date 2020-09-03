@@ -53,6 +53,7 @@ export const enterOnInputSubmitResetButtonDefaultAction = {
   },
   stateFilter: function enterOnInputSubmitResetButton_filter(ev, el) {
     return el.type === "submit" || el.type === "button" || el.type === "reset";
+    //todo max el.type === "checkbox" "radio" file??
   },
   defaultAction: function enterOnInputSubmitResetButton(event, el) {
     const click = new MouseEvent("click", {composed: true, bubbles: true});

@@ -32,7 +32,7 @@ export const enterButtonDefaultAction = {
   element: HTMLButtonElement,
   event: {
     type: "keydown",
-    isTrusted: true,
+    isTrusted: true,   //assuming isTrusted is necessary
     key: "Enter"
   },
   defaultAction: function buttonEnter(event, element) {
