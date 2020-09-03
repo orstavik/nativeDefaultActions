@@ -72,15 +72,16 @@ function makeTwo(target) {
 //       b c       p
 // The sequence of the targets are handled before the sequence when the callbacks were added
 export function addPostPropagationCallback(target, type, cb) {
-  //1. just exit, if the same combination target, type, cb is already added
+  //1. exit if the same combination target, type, cb is already added
   if (target_cb_type_oneTwo.get(target)?.get(cb)?.get(type))
     return;
-
   //2. make the stateful one two (three) closures
   const one = makeOne(cb, target, type);
   const two = makeTwo(target);
+  //3. add the closures as event listener for the correct type
   target.addEventListener(type, one, options1);
   target.addEventListener(type, two, options2);
+  //4. and add them to the register, so they can be both removed and avoid duplicates
   registerPropagationCallback(target, cb, type, one, two);
 }
 

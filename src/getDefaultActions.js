@@ -5,6 +5,9 @@
 //this pedagogy is actually hugely important..
 
 import {nativeDefaultActions} from "./ListOfNativeDefaultActions.js";
+import {addPostPropagationCallback} from "./postPropagationCallback.js";
+import {processDefaultActions} from "./DefaultActionMixin.js";
+export {DefaultActionMixin} from "./DefaultActionMixin.js";
 
 //Event: click[isTrusted]
 //                                  div, shadowRoot1, web-comp, div, slot, shadow2, my-href, div, body, html, document, window3
@@ -115,6 +118,11 @@ export function getDefaultActions(arg) {
 const targetToDA = new WeakMap();
 
 export function addDefaultAction(target, DA) {
+  if(target instanceof DocumentFragment && DA.element.prototype === HTMLElement|| DA.element.prototype instanceof HTMLElement){
+    if(DA.repeat === "all" || DA.repeat === "document")
+      throw new Error("You cannot add a repeatable default action such as `repeat: 'all'` or `repeat: 'document'` to a document (yet). Such default actions must be added to the elements directly (for now).");
+  }
+  addPostPropagationCallback(target, DA.event.type, processDefaultActions);
   //todo when we register a dynamic default action, we also have to add a postPropagationCallback that starts the process of default action process. per type.
   //todo this would not work well if the default action has repeat all or repeat document under a document node.
   const list = targetToDA.get(target);
@@ -151,4 +159,3 @@ export function removeDefaultAction(target, DA) {
 //               |/|0|/
 //      activeOK?|x|/
 //               |/
-

@@ -7,7 +7,7 @@ function prepareDefaultActions(e){
 
 const preparedDefaultActions = new WeakMap();
 
-function processDefaultActions(e) {
+export function processDefaultActions(e) {
   let prepped = preparedDefaultActions.get(e);
   if (!prepped)
     preparedDefaultActions.set(e, prepped = prepareDefaultActions(e));
