@@ -15,18 +15,15 @@ let lastMousemoveTarget;
 let lastDragover;
 let lastDragoverTarget;
 
-let intervallID;
+let timer;
 
 function dispatchDragEvents() {
-  //1. dragleave. If there is a change, and there was a previous dragover target.
-  //   the target is the last element that was dragover, the body of the event is the mousemove
-  //todo verify that the dragleave gets the latest event data
-  if (lastDragoverTarget && lastDragoverTarget !== lastMousemoveTarget)
-    lastDragoverTarget.dispatchEvent(new DragEvent("dragleave", lastMousemove));
-  //2. dragenter. If a new drop target is hit, then dispatch an alert about that.
-  //   the target is the last element that was dragover, the body of the event is the mousemove
-  if (lastDragoverTarget !== lastMousemoveTarget)
+  //1. dragenter.
+  if (lastDragoverTarget !== lastMousemoveTarget){
     lastMousemoveTarget.dispatchEvent(new DragEvent("dragenter", lastMousemove));
+    //2. dragleave, just not the first time.
+    lastDragoverTarget && lastDragoverTarget.dispatchEvent(new DragEvent("dragleave", lastMousemove));
+  }
   //3. dragover. the target is the possible droptarget
   lastDragover = new DragEvent("dragover", lastMousemove);
   lastDragoverTarget = lastMousemoveTarget;
@@ -43,6 +40,11 @@ function grabMousemove(e) {
   stopImmediatePropagationOG.call(e);
   lastMousemove = e;
   lastMousemoveTarget = e.target;
+  dispatchDragEvents();
+
+  //if the mouse doesn't move for a while, then we dispatch polling events every 350ms anyways.
+  clearInterval(timer);
+  timer = setInterval(dispatchDragEvents, 350);
 }
 
 function grabMouseup(e) {
@@ -82,7 +84,6 @@ function oneObserveMousemove(e) {
   lastMousemoveTarget = e.target;
   lastMousemove = e;
   dispatchDragEvents();
-  intervallID = setInterval(dispatchDragEvents, 150); //todo this is fluid i think, depending on how many changes there are.
 }
 
 
