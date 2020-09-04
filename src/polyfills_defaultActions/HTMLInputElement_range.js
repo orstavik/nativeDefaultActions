@@ -59,9 +59,20 @@ export const mousedownInputRangeDefaultAction = {
     processInputValue(input, oldValue, newValue, min, max);
     valueOnMousedown = oldValue;
 
+
+    //todo there is a problem with this type of statemachine.
+    // it doesn't mark the actions taken on mousemove and mouseup as defaultActions lowestWins.
+    // this means that it can come into conflict with other defaultActions higher up in the DOM,
+    // and although it should alert the other default actions about this problem, it doesn't.
+    // To fix this issue, we should add the moveObserver and the upObserver and the focusoutObserver
+    // as dynamic default actions instead. However, this is not so simple either, as the default action would
+    // registered on the window, and not the lower input element, and the lower element will often not exist in the
+    // composed path of the new mousemove and mouseup events.
+    // instead, the postPropagation callbacks call preventDefault() on the move and up events (but not the focusout() event)
     const moveObserver = function (move) {
       if (!move.isTrusted)
         return;
+      move.preventDefault();
       const [min, max, step, oldValue] = getConfiguredRangeInput(input);
       const newValue = (max - min) * factorFromLeft(down, input) + min;
       processInputValue(input, oldValue, newValue, min, max);
@@ -69,6 +80,7 @@ export const mousedownInputRangeDefaultAction = {
     const upObserver = function (up) {
       if (!up.isTrusted || up.button !== 0)
         return;
+      up.preventDefault();
       if(parseInt(input.value) !== valueOnMousedown)
         input.dispatchEvent(new InputEvent("change", {bubbles: true, composed: false}));
 
