@@ -1,0 +1,16 @@
+
+<input type="number">
+
+<script>
+  const input = document.querySelector("input");
+  function log(e){
+    console.log(e.type);
+    console.log(input, input.value, input.min, input.max, input.step);
+  }
+
+  window.addEventListener("mousedown", log);
+  // window.addEventListener("mousemove", log);
+  window.addEventListener("mouseup", log);
+  window.addEventListener("input", log);
+  window.addEventListener("change", log);
+</script>
