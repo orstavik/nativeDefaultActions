@@ -14,7 +14,7 @@ function dispatchMouseEvent(event, type, target) {
 //todo we need to select and drag events blocking (aux)click/contextmenu events
 //todo do we need to observe the mousedown??
 export const clickDefaultAction = {
-  element: HTMLElement,
+  element: Document,
   event: {
     type: "mouseup",
     isTrusted: true,
@@ -31,7 +31,7 @@ export const clickDefaultAction = {
 let lastMouseup, lastContextmenu;
 
 export const contextmenuDefaultAction = {
-  element: HTMLElement,
+  element: Document,
   event: {
     type: "mouseup",
     isTrusted: true,
@@ -47,7 +47,7 @@ export const contextmenuDefaultAction = {
 };
 
 export const auxclickDefaultAction2 = {
-  element: HTMLElement,
+  element: Document,
   event: {
     type: "mouseup", // also possible to activate by keyboard event
     isTrusted: true,
@@ -65,7 +65,7 @@ export const auxclickDefaultAction2 = {
 };
 
 export const auxclickDefaultAction1 = {
-  element: HTMLElement,
+  element: Document,
   event: {
     type: "mouseup",
     isTrusted: true,
@@ -79,7 +79,7 @@ export const auxclickDefaultAction1 = {
 };
 
 export const auxclickDefaultAction3 = {
-  element: HTMLElement,
+  element: Document,
   event: {
     type: "mouseup",
     isTrusted: true,
@@ -93,7 +93,7 @@ export const auxclickDefaultAction3 = {
 };
 
 export const auxclickDefaultAction4 = {
-  element: HTMLElement,
+  element: Document,
   event: {
     type: "mouseup",
     isTrusted: true,
@@ -104,17 +104,4 @@ export const auxclickDefaultAction4 = {
   },
   repeat: "lowestWins",
   preventable: false
-};
-
-export const showContextmenuDefaultAction = {
-  element: HTMLElement,
-  event: {
-    type: "contextmenu",
-    isTrusted: true
-  },
-  defaultAction: function display_contextmenu(event, element) {
-    alert("poor excuse for a contextmenu: " + element.tagName);
-  },
-  repeat: "lowestWins",
-  preventable: true
 };
