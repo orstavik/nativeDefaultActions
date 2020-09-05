@@ -1,3 +1,7 @@
+function isFocusable(el) {
+  return !el.disabled && el.matches("a[href], area[href], input, select, textarea, button, iframe, [tabindex], [contentEditable=true]");
+}
+
 export const mousedownFocusDefaultAction = {
   element: HTMLElement,
   event: {
@@ -5,12 +9,8 @@ export const mousedownFocusDefaultAction = {
     isTrusted: true,
     button: 0
   },
-  stateFilter: function mousdownFocus_filter_focusable(event, el) {
-    return !el.disabled && el.matches("a[href], area[href], input, select, textarea, button, iframe, [tabindex], [contentEditable=true]");
-  },
-  defaultAction: function MousedownFocuses(event, element) {
-    element.focus();
-  },
-  repeat: "once", //todo this should be repeat: document
-  preventable: true  //todo verify an make test case
+  defaultAction: function mousedownFocus(event, element) {
+    for (let el of event.composedPath())
+      isFocusable(el) && el.focus();
+  }
 };
