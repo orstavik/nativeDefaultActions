@@ -1,0 +1,44 @@
+<form action="#go">
+  <input id="one" type="checkbox">
+  <input id="two" type="checkbox">
+  <input id="three" type="reset">
+  <input id="a" type="checkbox">
+  <input id="b" type="checkbox">
+</form>
+<script>
+  const one = document.querySelector("#one");
+  const two = document.querySelector("#two");
+  const three = document.querySelector("#three");
+  const a = document.querySelector("#a");
+  const b = document.querySelector("#b");
+
+  function log(e) {
+    console.log(e.type);
+    console.log(one, one.checked);
+    console.log(two, two.checked);
+    console.log(three, three.checked);
+  }
+
+  window.addEventListener("DOMContentLoaded", log);
+
+  two.addEventListener("click", e => two.type = "reset");
+  three.addEventListener("click", e => three.type = "checkbox");
+
+  window.addEventListener("click", log);
+  window.addEventListener("keydown", log);
+  window.addEventListener("keypress", log);
+  window.addEventListener("change", log);
+  window.addEventListener("keydown", e => console.log(e.code));
+  a.addEventListener("keydown", e => e.preventDefault());
+  b.addEventListener("keypress", e => e.preventDefault());
+</script>
+<pre>
+  This demo illustrate how the checkbox default action is done before event propagation, while the reset is done after.
+  If you change the type of a checkbox from checkbox to reset during propagation, you will get both default actions run,
+  one before and one after the click event.
+
+  Vice versa, you get no default action if you change a type="reset" to type="checkbox" during propagation.
+
+  keydown space on the checkbox will trigger a keypress on the input element, which will then trigger a click.
+  preventDefault() only rowks on the keydown, not the keypress
+</pre>
