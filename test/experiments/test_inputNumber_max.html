@@ -1,0 +1,48 @@
+<style>
+  * {
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+  input{
+    width: 100px;
+    height: 16px;
+  }
+</style>
+
+<input type="number" min="5" max="10">
+
+<ol>
+  <li>keydown 1 (add "1" to the input)</li>
+  <li>mousedown x:92,y:5, timeStamp: 10 (press up inside the input)</li>
+  <li>mouseup x:92,y:5, timeStamp: 50 (we only press one click with the keyboard)</li>
+</ol>
+
+<div id="guide" style="position: fixed; top: 0; right: 0;">here comes the mouse coordinates</div>
+
+<script>
+  const input = document.querySelector("input");
+  input.focus();
+
+  function log(e) {
+    console.log(e.type, input.value, input.min);
+  }
+  window.addEventListener("mousedown", log);
+  window.addEventListener("keydown", log);
+  window.addEventListener("input", log);
+  window.addEventListener("change", log);
+  window.addEventListener("mouseup", log);
+
+  window.addEventListener("mousemove", e=>{
+    const guide = document.querySelector("#guide");
+    guide.innerText = `x: ${e.x}, y: ${e.y}`;
+  })
+  //realOutput
+
+  //expectedOutput
+  // keydown  5
+  // input 1 5
+  // keydown 1 5
+  // input 5 5
+  // change 5 5
+</script>
