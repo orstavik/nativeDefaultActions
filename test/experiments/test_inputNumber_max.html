@@ -4,7 +4,7 @@
     margin: 0;
     border: 0;
   }
-  input{
+  input {
     width: 100px;
     height: 16px;
   }
@@ -24,21 +24,35 @@
   const input = document.querySelector("input");
   input.focus();
 
+  const res = [];
+
   function log(e) {
     console.log(e.type, input.value, input.min);
+    res.push({event: e.type, inputValue: input.value, inputMin: input.min});
   }
+
   window.addEventListener("mousedown", log);
   window.addEventListener("keydown", log);
   window.addEventListener("input", log);
   window.addEventListener("change", log);
   window.addEventListener("mouseup", log);
 
-  window.addEventListener("mousemove", e=>{
+  window.addEventListener("mousemove", e => {
     const guide = document.querySelector("#guide");
     guide.innerText = `x: ${e.x}, y: ${e.y}`;
   })
+
   //realOutput
 
+  function deepEquals(objA, objB) {
+    return true || false;
+  }
+
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "Enter")
+      return deepEquals(res, [{},
+      ]);
+  });
   //expectedOutput
   // keydown  5
   // input 1 5
